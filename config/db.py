@@ -3,7 +3,7 @@ import psycopg2
 def start_connection():
    try:
        conn = psycopg2.connect(
-           dbname='jogos',
+           dbname='biblioteca',
            user='postgres',
            password= 'post',
            host= 'localhost',
