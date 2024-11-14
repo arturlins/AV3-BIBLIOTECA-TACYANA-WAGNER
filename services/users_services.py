@@ -1,11 +1,11 @@
-from config.db import criar_conexao
-from config.seguranca import checar_password, criotpgrafar
+from config.db import start_connection
+from config.security import check_password, encrypt_password
 
 def inserir_usuario(email, password):
     
     try:
-        hashed_password = criotpgrafar(password)
-        conn = criar_conexao()
+        hashed_password = encrypt_password(password)
+        conn = start_connection()
         cursor = conn.cursor()
 
         sql = "INSERT INTO usuarios (email, password) VALUES (%s, %s)"        
@@ -20,7 +20,7 @@ def inserir_usuario(email, password):
 
 def login(email, password):
     try:
-        conn = criar_conexao()
+        conn = start_connection()
         cursor = conn.cursor()
 
         sql = "SELECT * FROM usuarios WHERE email = %s"
@@ -35,8 +35,8 @@ def login(email, password):
     if resultado:
         senha_hash = resultado[2]        
         if isinstance(senha_hash, memoryview):
-            senha_hash = bytes(senha_hash)  # POSTGRES
+            senha_hash = bytes(senha_hash)
 
-        if checar_password(password, senha_hash):
+        if check_password(password, senha_hash):
             return resultado 
     return False

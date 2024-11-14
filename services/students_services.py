@@ -1,4 +1,4 @@
-from config.db import criar_conexao
+from config.db import start_connection
 
 
 def create_task(user_id, title):

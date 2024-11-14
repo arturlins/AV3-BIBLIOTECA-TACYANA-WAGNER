@@ -1,5 +1,5 @@
 from os import system
-from services.search_service import *
+from services import *
 
 while True:
     try:            
