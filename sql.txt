@@ -1,0 +1,9 @@
+select administradores.email_administrador from	administradores where administradores.email_administrador = 'admin';
+
+
+select alunos.email_aluno from alunos where alunos.email_aluno = 'admin';
+
+
+alter table alunos add privilegio_admin boolean;
+
+drop table administradores;
