@@ -7,7 +7,7 @@ def add_admin(registration, name, email, password):
         hashed_password = encrypt_password(password)
         conn = start_connection()
         cursor = conn.cursor()
-        sql = "INSERT INTO administradores (matricula_administrador, nome_administrador, email_administrador, senha_administrador) VALUES (%s, %s, %s, %s)"
+        sql = "INSERT INTO alunos (matricula_aluno, nome_aluno, email_aluno, curso_aluno, senha_aluno, privilegio_admin) VALUES (%s, %s, %s, 'ADMIN', %s, TRUE)"
         cursor.execute(sql, (registration, name, email, hashed_password))
         conn.commit()
         print("Administrador adicionado com sucesso!")

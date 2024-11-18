@@ -2,7 +2,7 @@ from config.db import start_connection
 
 
 def create_task(user_id, title):
-    conn = criar_conexao()
+    conn = start_connection()
     cursor = conn.cursor()
     sql = 'INSERT INTO TASKS (title, user_id) VALUES (%s, %s)'
     cursor.execute(sql, [title, user_id])
@@ -10,7 +10,7 @@ def create_task(user_id, title):
 
 
 def list_tasks(user_id):
-    conn = criar_conexao()
+    conn = start_connection()
     cursor = conn.cursor()
     sql = 'SELECT * FROM TASKS WHERE user_id = %s'
     cursor.execute(sql, [user_id])
@@ -18,7 +18,7 @@ def list_tasks(user_id):
     return tasks
 
 def delete_task(user_id, task_id):
-    conn = criar_conexao()
+    conn = start_connection()
     cursor = conn.cursor()
     sql = 'DELETE FROM TASKS WHERE user_id = %s AND id = %s'
     cursor.execute(sql, [user_id, task_id])
@@ -27,7 +27,7 @@ def delete_task(user_id, task_id):
 
 
 def update_task(user_id, task_id, title):
-    conn = criar_conexao()
+    conn = start_connection()
     cursor = conn.cursor()
     sql = 'UPDATE TASKS SET title = %s WHERE user_id = %s AND id = %s'
     cursor.execute(sql, [title, user_id, task_id])

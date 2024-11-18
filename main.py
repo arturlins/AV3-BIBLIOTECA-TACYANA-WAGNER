@@ -1,22 +1,22 @@
 from os import system
-from services import *
+from services.users_services import add_student, login
+import pwinput
 
 while True:
     try:            
-        print("Bem-vindo à Biblioteca de Jogos!\nEscolha uma opção abaixo: ")
-        print("1 - Fazer busca no catálogo")
-        print("2 - Listar apenas os títulos dos jogos em ordem crescente")
-        print("3 - Listar os jogos que contêm 'k' no título ou subtítulo")
-        print("4 - Sair")
+        print("Bem-vindo à Biblioteca do Cesmac!\nEscolha uma opção abaixo: ")
+        print("1 - Criar cadastro")
+        print("2 - Fazer Login")
+        print("3 - Sair")
         opc = int(input("Selecione a opção: "))
         match opc:
             case 1:
-                search_games()
+                add_student()
             case 2:
-                list_games()
+                email = input("Digite o email: ")
+                password = pwinput.pwinput("Digite a senha: ")
+                login(email, password)
             case 3:
-                search_k_games()
-            case 4:
                 print("Saindo...")
                 break
             case _:
