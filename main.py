@@ -1,5 +1,7 @@
 from os import system
-from services.users_services import add_student, login
+from services.users_services import add_student, login, privilege_check
+from screens.admin_screen import admin_screen
+from screens.user_screen import  user_screen
 import pwinput
 
 while True:
@@ -16,7 +18,18 @@ while True:
                 email = input("Digite o email: ")
                 password = pwinput.pwinput("Digite a senha: ")
                 login(email, password)
+                authenticated_user = login(email, password)
+                privilege_check(email)
+                privilege = privilege_check(email)
+                if authenticated_user and privilege == True:
+                        admin_screen(authenticated_user)
+                elif authenticated_user and privilege == False:
+                        user_screen(authenticated_user)
+                else:
+                    system('cls')
+                    print("Usuario ou senha invalidos!")
             case 3:
+                system('cls')
                 print("Saindo...")
                 break
             case _:

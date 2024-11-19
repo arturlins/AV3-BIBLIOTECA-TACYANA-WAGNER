@@ -20,8 +20,8 @@ def add_student():
         
         system('cls')
         print("Usuário criado com sucesso!")
-    except Exception as e:
-        print(f"Erro ao criar usuário: {e}")
+    except Exception as add_error:
+        print(f"Erro ao criar usuário: {add_error}")
     finally:
         conn.close()
 
@@ -29,22 +29,37 @@ def login(email, password):
     try:
         conn = start_connection()
         cursor = conn.cursor()
-
-        #sql = "SELECT alunos.email_aluno FROM alunos WHERE alunos.email_aluno = %s";
         sql = "SELECT * FROM alunos WHERE email_aluno = %s"
         cursor.execute(sql, (email,))
-        resultado = cursor.fetchone()
-        
-    except Exception as e:
-        print(f"Erro ao realizar login: {e}")
+        result = cursor.fetchone()
+    except Exception as login_error:
+        print(f"Erro ao realizar login: {login_error}")
         return False
     finally:
         conn.close()
-    if resultado:
-        senha_hash = resultado[5]        
-        if isinstance(senha_hash, memoryview):
-            senha_hash = bytes(senha_hash)
-
-        if check_password(password, senha_hash):
-            return resultado 
+    if result:
+        hash_password = result[5]        
+        if isinstance(hash_password, memoryview):
+            hash_password = bytes(hash_password)
+        if check_password(password, hash_password):
+            return result
     return False
+
+def privilege_check(email):
+    try:
+        conn = start_connection()
+        cursor = conn.cursor()
+        sql = "SELECT * FROM alunos WHERE email_aluno = %s"
+        cursor.execute(sql, (email,))
+        result = cursor.fetchone()
+        admin_privilege = result[6]
+        print(result)
+    except Exception as privilege_error:
+        print(f"Erro ao identificar o privilégio do usuário: {privilege_error}")
+        return False
+    finally:
+        conn.close()
+    if admin_privilege == True:
+        return True
+    elif admin_privilege == False:
+        return False
