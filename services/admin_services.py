@@ -37,6 +37,31 @@ def list_books():
         print(f"- QUANTIDADE DE VOLUMES NO CATÁLOGO: {quantidade}")
         print(f"-----------------------------------------------------------------------------------------------------------\n")
 
+def list_book_category():
+    conn = start_connection()
+    cursor = conn.cursor()
+    sql = "SELECT id_categoria, nome_categoria FROM categorias ORDER BY id_categoria"
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    print("Lista de categorias cadastradas: ")
+    counter = 0
+    for id_categoria, nome_categoria in result:
+        counter = counter + 1
+        print(f"{id_categoria} - {nome_categoria}")
+    #return counter
+
+def add_book_category():
+    category = input("Digite o nome da nova categoria: ")
+    conn = start_connection()
+    cursor = conn.cursor()
+    sql = "INSERT INTO categorias(nome_categoria) VALUES (%s)"
+    cursor.execute(sql, [category])
+    conn.commit()
+    #result = cursor.fetchall()
+    print("Categoria adicionada com sucesso")
+
+def add_book():
+    print("Qual a categoria do livro a ser adicionado?")
 # def create_task(user_id, title):
 #     conn = criar_conexao()
 #     cursor = conn.cursor()
