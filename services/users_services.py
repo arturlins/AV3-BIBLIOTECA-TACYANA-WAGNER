@@ -53,7 +53,6 @@ def privilege_check(email):
         cursor.execute(sql, (email,))
         result = cursor.fetchone()
         admin_privilege = result[6]
-        print(result)
     except Exception as privilege_error:
         print(f"Erro ao identificar o privilégio do usuário: {privilege_error}")
         return False
