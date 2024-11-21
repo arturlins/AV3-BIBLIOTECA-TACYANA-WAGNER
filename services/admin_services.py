@@ -20,22 +20,52 @@ def add_admin(registration, name, email, password):
 def list_books():
     conn = start_connection()
     cursor = conn.cursor()
-    sql = "SELECT livros.titulo_livro, autores.nome_autor, autores.sobrenome_autor, editoras.nome_editora, categorias.nome_categoria, livros.ano_livro, livros.idioma_livro, livros.quantidade from livros JOIN autores ON livros.id_autor = autores.id_autor JOIN editoras ON livros.id_editora = editoras.id_editora JOIN categorias ON livros.id_categoria = categorias.id_categoria ORDER BY livros.titulo_livro"
+    sql = "SELECT livros.titulo_livro, autores.nome_autor, editoras.nome_editora, categorias.nome_categoria, livros.ano_livro, livros.idioma_livro, livros.isbn_livro, livros.quantidade from livros JOIN autores ON livros.id_autor = autores.id_autor JOIN editoras ON livros.id_editora = editoras.id_editora JOIN categorias ON livros.id_categoria = categorias.id_categoria ORDER BY livros.titulo_livro"
     cursor.execute(sql)
     result = cursor.fetchall()
     print("Lista de todos os livros cadastrados (em ordem alfabética): ")
     counter = 0
-    for titulo_livro, nome_autor, sobrenome_autor, nome_editora, nome_categoria, ano_livro, idioma_livro, quantidade in result:
+    for titulo_livro, nome_autor, nome_editora, nome_categoria, ano_livro, idioma_livro, isbn_livro, quantidade in result:
         counter = counter + 1
         print(f"- ID: {counter}")
         print(f"- TÍTULO: {titulo_livro}")
-        print(f"- AUTOR: {nome_autor} {sobrenome_autor}")
+        print(f"- AUTOR: {nome_autor}")
         print(f"- EDITORA: {nome_editora}")
         print(f"- CATEGORIA: {nome_categoria}")
         print(f"- ANO DA EDIÇÃO: {ano_livro}")
         print(f"- IDIOMA DO LIVRO: {idioma_livro}")
+        print(f"- ISBN DO LIVRO: {isbn_livro}")
         print(f"- QUANTIDADE DE VOLUMES NO CATÁLOGO: {quantidade}")
         print(f"-----------------------------------------------------------------------------------------------------------\n")
+
+def list_book_author():
+    conn = start_connection()
+    cursor = conn.cursor()
+    sql = "SELECT id_autor, nome_autor FROM autores ORDER BY nome_autor"
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    print("Lista de autores cadastrados: ")
+    counter = 0
+    for id_autor, nome_autor in result:
+        counter = counter + 1
+        print(f"- {nome_autor} - ID: {id_autor}")
+    return counter
+
+def list_book_publisher():
+    conn = start_connection()
+    cursor = conn.cursor()
+    sql = "SELECT id_editora, nome_editora, local_editora FROM editoras ORDER BY id_editora"
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    print("Lista de editoras cadastradas: ")
+    counter = 0
+    for id_editora, nome_editora, local_editora in result:
+        counter = counter + 1
+        if local_editora:
+            print(f"- {nome_editora} ({local_editora}) - ID: {id_editora}")
+        else:
+            print(f"- {nome_editora} (local não cadastrado) - ID: {id_editora}")
+    return counter
 
 def list_book_category():
     conn = start_connection()
@@ -48,20 +78,199 @@ def list_book_category():
     for id_categoria, nome_categoria in result:
         counter = counter + 1
         print(f"{id_categoria} - {nome_categoria}")
-    #return counter
+    return counter
 
-def add_book_category():
-    category = input("Digite o nome da nova categoria: ")
-    conn = start_connection()
-    cursor = conn.cursor()
-    sql = "INSERT INTO categorias(nome_categoria) VALUES (%s)"
-    cursor.execute(sql, [category])
-    conn.commit()
-    #result = cursor.fetchall()
-    print("Categoria adicionada com sucesso")
+# def add_book_category():
+#     counter = (list_book_category() + 1)
+#     #system('cls')
+#     while True:
+#         try:
+#             #list_book_category()
+#             id_category = int(input(f"Digite o ID da categoria ou digite {counter} para adicionar uma nova: "))
+#             if id_category <= 0 or id_category > counter:
+#                 print("Valor inválido")
+#             elif id_category == counter:
+#                 category = input("Digite o nome da nova categoria: ")
+#                 conn = start_connection()
+#                 cursor = conn.cursor()
+#                 sql = "INSERT INTO categorias(nome_categoria) VALUES (%s)"
+#                 cursor.execute(sql, [category])
+#                 conn.commit()
+#                 print("Categoria adicionada com sucesso")
+#                 break
+#             elif id_category in range(1, (counter + 1)):
+#                 print(f"O id é {id_category}")
+#                 sql_category = f"{id_category}"
+#                 print(sql_category)
+#                 break
+#             return sql_category
+#         except ValueError:
+#             print("Valor inválido")
 
-def add_book():
-    print("Qual a categoria do livro a ser adicionado?")
+def add_new_book():
+    next = 0
+    counter = (list_book_author() + 1)
+    while next == 0:
+        try:
+            id_author = int(input(f"Digite o ID do autor ou digite {counter} para adicionar um novo: "))
+            if id_author <= 0 or id_author > counter:
+                print("Valor inválido")
+            elif id_author == counter:
+                author = input("Digite o nome do novo autor: ")
+                conn = start_connection()
+                cursor = conn.cursor()
+                sql = "INSERT INTO autores(nome_autor) VALUES (%s)"
+                cursor.execute(sql, [author])
+                conn.commit()
+                conn.close()
+                next = 1
+                break
+            elif id_author in range(1, (counter + 1)):
+                next = 1
+                break
+        except ValueError:
+            print("Valor inválido")
+        except Exception as author_error:
+            print(f"Erro ao tentar adicionar o autor: {author_error}")
+    
+    system('cls')
+    while next == 1:
+        try:
+            book_title = input(f"Digite o título do livro: ")
+            next = 2
+            break
+        except Exception as title_error:
+            print(f"Erro ao tentar adicionar o livro: {title_error}")
+
+    system('cls')
+    counter = (list_book_publisher() + 1)
+    while next == 2:
+        try:
+            id_publisher = int(input(f"Digite o ID da editora ou digite {counter} para adicionar uma nova: "))
+            if id_publisher <= 0 or id_publisher > counter:
+                print("Valor inválido")
+            elif id_publisher == counter:
+                publisher_name = input("Digite o nome da editora: ")
+                publisher_location = input("Digite o local da editora: ")
+                conn = start_connection()
+                cursor = conn.cursor()
+                sql = "INSERT INTO editoras(nome_editora, local_editora) VALUES (%s, %s)"
+                cursor.execute(sql, [publisher_name, publisher_location])
+                conn.commit()
+                conn.close()
+                next = 3
+                break
+            elif id_publisher in range(1, (counter + 1)):
+                next = 3
+                break
+        except ValueError:
+            print("Valor inválido")
+        except Exception as publisher_error:
+            print(f"Erro ao tentar adicionar a editora: {publisher_error}")
+    
+    system('cls')
+    while next == 3:
+        try:
+            book_isbn = input(f"Digite o ISBN do livro: ")
+            next = 4
+            break
+        except Exception as isbn_error:
+            print(f"Erro ao tentar adicionar o ISBN do livro: {isbn_error}")
+
+    system('cls')
+    while next == 4:
+        try:
+            book_year = input(f"Digite o ano da edição do livro: ")
+            next = 5
+            break
+        except Exception as year_error:
+            print(f"Erro ao tentar adicionar o ISBN do livro: {year_error}")
+
+    system('cls')
+    while next == 5:
+        try:
+            book_language = input(f"Digite o idioma em que o livro foi publicado: ")
+            next = 6
+            break
+        except Exception as language_error:
+            print(f"Erro ao tentar adicionar o ISBN do livro: {language_error}")
+
+    system('cls')
+    counter = (list_book_category() + 1)
+    while next == 6:
+        try:
+            id_category = int(input(f"Digite o ID da categoria ou digite {counter} para adicionar uma nova: "))
+            if id_category <= 0 or id_category > counter:
+                print("Valor inválido")
+            elif id_category == counter:
+                category = input("Digite o nome da nova categoria: ")
+                conn = start_connection()
+                cursor = conn.cursor()
+                sql = "INSERT INTO categorias(nome_categoria) VALUES (%s)"
+                cursor.execute(sql, [category])
+                conn.commit()
+                conn.close()
+                next = 7
+                break
+            elif id_category in range(1, (counter + 1)):
+                next = 7
+                break
+        except ValueError:
+            print("Valor inválido")
+        except Exception as category_error:
+            print(f"Erro ao tentar adicionar a categoria: {category_error}")
+        
+    system('cls')
+    while next == 7:
+        try:
+            book_quantity = int(input(f"Digite a quantidade de volumes a serem disponibilizados: "))
+            conn = start_connection()
+            cursor = conn.cursor()
+            sql = "INSERT INTO  livros(id_autor, titulo_livro, id_editora, isbn_livro, ano_livro, idioma_livro, id_categoria, quantidade) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+            cursor.execute(sql, [id_author, book_title, id_publisher, book_isbn, book_year, book_language, id_category, book_quantity])
+            conn.commit()
+            break
+        except ValueError:
+            print("Valor inválido")
+        except Exception as quantity_error:
+            print(f"Erro ao tentar adicionar a quantidade de volumes disponíveis: {quantity_error}")
+        finally:
+            conn.close()
+            system('cls')
+            print("Livro adicionado com sucesso")
+
+
+
+    # while next == 4:
+    #     try:
+    #         id_category = int(input(f"Digite o ID da categoria ou digite {counter} para adicionar uma nova: "))
+    #         if id_category <= 0 or id_category > counter:
+    #             print("Valor inválido")
+    #         elif id_category == counter:
+    #             category = input("Digite o nome da nova categoria: ")
+    #             conn = start_connection()
+    #             cursor = conn.cursor()
+    #             sql = "INSERT INTO categorias(nome_categoria) VALUES (%s)"
+    #             cursor.execute(sql, [category])
+    #             conn.commit()
+    #             print("Categoria adicionada com sucesso")
+    #             break
+    #         elif id_category in range(1, (counter + 1)):
+    #             print(f"O id é {id_category}")
+    #             sql_category = f"{id_category}"
+    #             print(sql_category)
+    #             break
+    #         return sql_category
+    #     except ValueError:
+    #         print("Valor inválido")
+    #     except Exception as category_error:
+    #         print(f"Erro ao tentar adicionar a categoria: {category_error}")
+    #     finally:
+    #         conn.close()
+
+
+
+
 # def create_task(user_id, title):
 #     conn = criar_conexao()
 #     cursor = conn.cursor()
