@@ -24,10 +24,9 @@ def list_books():
     cursor.execute(sql)
     result = cursor.fetchall()
     print("Lista de todos os livros cadastrados (em ordem alfabética): ")
-    #counter = 0
+    max_id = []
     for id_livro, titulo_livro, nome_autor, nome_editora, nome_categoria, ano_livro, idioma_livro, isbn_livro, quantidade in result:
-        # counter = counter + 1
-        # print(f"LIVRO {counter}")
+        max_id.append(id_livro)
         print(f"- TÍTULO: {titulo_livro}")
         print(f"- AUTOR: {nome_autor}")
         print(f"- ID DO LIVRO: {id_livro}")
@@ -38,7 +37,27 @@ def list_books():
         print(f"- ISBN DO LIVRO: {isbn_livro}")
         print(f"- QUANTIDADE DE VOLUMES NO CATÁLOGO: {quantidade}")
         print(f"\n-----------------------------------------------------------------------------------------------------------\n")
+    max_id.sort()
     conn.close()
+    return max_id[-1]
+
+def list_books_simpler():
+    conn = start_connection()
+    cursor = conn.cursor()
+    sql = "SELECT id_livro, titulo_livro, nome_autor FROM livros JOIN autores ON livros.id_autor = autores.id_autor ORDER BY livros.titulo_livro"
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    print("Lista de todos os livros cadastrados (em ordem alfabética): ")
+    max_id = []
+    for id_livro, titulo_livro, nome_autor in result:
+        max_id.append(id_livro)
+        print(f"- TÍTULO: {titulo_livro}")
+        print(f"- AUTOR: {nome_autor}")
+        print(f"- ID DO LIVRO: {id_livro}")
+        print(f"\n-----------------------------------------------------------------------------------------------------------\n")
+    max_id.sort()
+    conn.close()
+    return max_id
 
 def list_book_author():
     conn = start_connection()
@@ -210,6 +229,9 @@ def add_new_book():
             sql = "INSERT INTO  livros(id_autor, titulo_livro, id_editora, isbn_livro, ano_livro, idioma_livro, id_categoria, quantidade) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
             cursor.execute(sql, [id_author, book_title, id_publisher, book_isbn, book_year, book_language, id_category, book_quantity])
             conn.commit()
+            conn.close()
+            system('cls')
+            print("Livro adicionado com sucesso")
             break
         except ValueError:
             print("Valor inválido")
@@ -217,8 +239,31 @@ def add_new_book():
             print(f"Erro ao tentar adicionar a quantidade de volumes disponíveis: {quantity_error}")
         finally:
             conn.close()
-            system('cls')
-            print("Livro adicionado com sucesso")
+            break
+
+def remove_book():
+    counter = list_books_simpler()
+    max_id = counter[-1]
+    while True:
+        try:
+            id_delete = int(input("Digite o ID do livro que você quer remover do banco de dados: "))
+            if id_delete < 0 or id_delete > max_id:
+                print("Valor inválido")
+            elif id_delete in range (1, max_id + 1):
+                conn = start_connection()
+                cursor = conn.cursor()
+                sql = "DELETE FROM livros WHERE id_livro = %s"
+                cursor.execute(sql, [id_delete])
+                conn.commit()
+                conn.close()
+                print("Livro removido com sucesso")
+                break
+            elif id_delete not in range (1, max_id + 1):
+                print("Valor inválido")
+        except ValueError:
+            print("Valor inválido")
+        except Exception as remove_book_error:
+            print(f"Erro ao tentar adicionar a quantidade de volumes disponíveis: {remove_book_error}")
 
 
 # def create_task(user_id, title):
