@@ -14,7 +14,7 @@ def add_student():
         conn = start_connection()
         cursor = conn.cursor()
 
-        sql = "INSERT INTO alunos (matricula_aluno, nome_aluno, email_aluno, curso_aluno, senha_aluno, privilegio_admin) VALUES (%s, %s, %s, %s, %s, FALSE)"        
+        sql = "INSERT INTO usuarios (matricula_usuario, nome_usuario, email_usuario, curso_usuario, senha_usuario, privilegio_admin) VALUES (%s, %s, %s, %s, %s, FALSE)"        
         cursor.execute(sql, (registration, name, email, course, hashed_password))
         conn.commit()
         
@@ -29,7 +29,7 @@ def login(email, password):
     try:
         conn = start_connection()
         cursor = conn.cursor()
-        sql = "SELECT * FROM alunos WHERE email_aluno = %s"
+        sql = "SELECT * FROM usuarios WHERE email_usuario = %s"
         cursor.execute(sql, (email,))
         result = cursor.fetchone()
     except Exception as login_error:
@@ -49,7 +49,7 @@ def privilege_check(email):
     try:
         conn = start_connection()
         cursor = conn.cursor()
-        sql = "SELECT * FROM alunos WHERE email_aluno = %s"
+        sql = "SELECT * FROM usuarios WHERE email_usuario = %s"
         cursor.execute(sql, (email,))
         result = cursor.fetchone()
         admin_privilege = result[6]

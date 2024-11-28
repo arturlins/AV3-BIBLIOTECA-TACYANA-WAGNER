@@ -1,6 +1,6 @@
 from os import system
 from services.admin_services import list_books
-from services.students_services import *
+from services.students_services import rent_book, edit_student_data
 
 def user_screen(user):
        while True:
@@ -9,7 +9,8 @@ def user_screen(user):
             print("1 - Listar livros do catálogo")
             print("2 - Locar um livro")
             print("3 - Devolver um livro")
-            print("3 - Sair")
+            print("4 - Editar dados pessoais")
+            print("5 - Sair")
             opc = int(input("Selecione a opção: "))
             match opc:
                 case 1:
@@ -20,6 +21,12 @@ def user_screen(user):
                     system('cls')
                     print("Saindo...")
                     break
+                case 4:
+                    registration = input("Digite a matrícula do  aluno: ")
+                    name = input("Digite o nome do  aluno: ")
+                    email = input("Digite o email do  aluno:")
+                    password = ("Digite a senha do aluno : ")
+                    edit_student_data(registration, name, email, password)
                 case _:
                     system('cls')
                     print("Opção inválida")          

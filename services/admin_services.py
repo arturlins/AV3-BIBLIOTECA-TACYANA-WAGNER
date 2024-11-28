@@ -7,7 +7,7 @@ def add_admin(registration, name, email, password):
         hashed_password = encrypt_password(password)
         conn = start_connection()
         cursor = conn.cursor()
-        sql = "INSERT INTO alunos (matricula_aluno, nome_aluno, email_aluno, curso_aluno, senha_aluno, privilegio_admin) VALUES (%s, %s, %s, 'ADMIN', %s, TRUE)"
+        sql = "INSERT INTO alunos (matricula_usuario, nome_usuario, email_usuario, curso_usuario, senha_usuario, privilegio_admin) VALUES (%s, %s, %s, 'ADMIN', %s, TRUE)"
         cursor.execute(sql, (registration, name, email, hashed_password))
         conn.commit()
         system('cls')
