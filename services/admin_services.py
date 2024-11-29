@@ -7,7 +7,7 @@ def add_admin(registration, name, email, password):
         hashed_password = encrypt_password(password)
         conn = start_connection()
         cursor = conn.cursor()
-        sql = "INSERT INTO alunos (matricula_usuario, nome_usuario, email_usuario, curso_usuario, senha_usuario, privilegio_admin) VALUES (%s, %s, %s, 'ADMIN', %s, TRUE)"
+        sql = "INSERT INTO biblioteca.funcionarios (matricula_funcionario, nome_funcionario, email_funcionario, senha_funcionario) VALUES (%s, %s, %s, %s)"
         cursor.execute(sql, (registration, name, email, hashed_password))
         conn.commit()
         system('cls')
@@ -20,12 +20,12 @@ def add_admin(registration, name, email, password):
 def list_books():
     conn = start_connection()
     cursor = conn.cursor()
-    sql = "SELECT id_livro, titulo_livro, nome_autor, nome_editora, nome_categoria, ano_livro, idioma_livro, isbn_livro, quantidade from livros JOIN autores ON livros.id_autor = autores.id_autor JOIN editoras ON livros.id_editora = editoras.id_editora JOIN categorias ON livros.id_categoria = categorias.id_categoria ORDER BY livros.titulo_livro"
+    sql = "SELECT id_livro, titulo_livro, nome_autor, nome_editora, nome_categoria, ano_livro, idioma_livro, isbn_livro, quantidade_catalogo, quantidade_reservado, quantidade_locado from biblioteca.livros JOIN biblioteca.autores ON livros.id_autor = autores.id_autor JOIN biblioteca.editoras ON livros.id_editora = editoras.id_editora JOIN biblioteca.categorias ON livros.id_categoria = categorias.id_categoria ORDER BY biblioteca.livros.titulo_livro"
     cursor.execute(sql)
     result = cursor.fetchall()
     print("Lista de todos os livros cadastrados (em ordem alfabética): ")
     max_id = []
-    for id_livro, titulo_livro, nome_autor, nome_editora, nome_categoria, ano_livro, idioma_livro, isbn_livro, quantidade in result:
+    for id_livro, titulo_livro, nome_autor, nome_editora, nome_categoria, ano_livro, idioma_livro, isbn_livro, quantidade_catalogo, quantidade_reservado, quantidade_locado in result:
         max_id.append(id_livro)
         print(f"- TÍTULO: {titulo_livro}")
         print(f"- AUTOR: {nome_autor}")
@@ -35,16 +35,22 @@ def list_books():
         print(f"- ANO DA EDIÇÃO: {ano_livro}")
         print(f"- IDIOMA DO LIVRO: {idioma_livro}")
         print(f"- ISBN DO LIVRO: {isbn_livro}")
-        print(f"- QUANTIDADE DE VOLUMES NO CATÁLOGO: {quantidade}")
+        print(f"- QUANTIDADE DE VOLUMES NO CATÁLOGO: {quantidade_catalogo}")
+        print(f"- QUANTIDADE DE VOLUMES RESERVADOS: {quantidade_reservado}")
+        print(f"- QUANTIDADE DE VOLUMES LOCADOS: {quantidade_locado}")
+        print(f"- QUANTIDADE DE VOLUMES DISPONÍVEIS PARA RESERVA: {quantidade_catalogo - (quantidade_reservado + quantidade_locado)}")
         print(f"\n-----------------------------------------------------------------------------------------------------------\n")
     max_id.sort()
     conn.close()
-    return max_id[-1]
+    if max_id:
+        return max_id[-1]
+    else:
+        return 0
 
 def list_books_simpler():
     conn = start_connection()
     cursor = conn.cursor()
-    sql = "SELECT id_livro, titulo_livro, nome_autor FROM livros JOIN autores ON livros.id_autor = autores.id_autor ORDER BY livros.titulo_livro"
+    sql = "SELECT id_livro, titulo_livro, nome_autor FROM biblioteca.livros JOIN biblioteca.autores ON livros.id_autor = autores.id_autor ORDER BY biblioteca.livros.titulo_livro"
     cursor.execute(sql)
     result = cursor.fetchall()
     print("Lista de todos os livros cadastrados (em ordem alfabética): ")
@@ -57,12 +63,15 @@ def list_books_simpler():
         print(f"\n-----------------------------------------------------------------------------------------------------------\n")
     max_id.sort()
     conn.close()
-    return max_id
+    if max_id:
+        return max_id[-1]
+    else:
+        return 0
 
 def list_book_author():
     conn = start_connection()
     cursor = conn.cursor()
-    sql = "SELECT id_autor, nome_autor FROM autores ORDER BY nome_autor"
+    sql = "SELECT id_autor, nome_autor FROM biblioteca.autores ORDER BY nome_autor"
     cursor.execute(sql)
     result = cursor.fetchall()
     print("Lista de autores cadastrados (em ordem alfabética): ")
@@ -72,12 +81,15 @@ def list_book_author():
         print(f"- {nome_autor} - ID: {id_autor}")
     max_id.sort()
     conn.close()
-    return max_id[-1]
+    if max_id:
+        return max_id[-1]
+    else:
+        return 0
 
 def list_book_publisher():
     conn = start_connection()
     cursor = conn.cursor()
-    sql = "SELECT id_editora, nome_editora, local_editora FROM editoras ORDER BY nome_editora"
+    sql = "SELECT id_editora, nome_editora, local_editora FROM biblioteca.editoras ORDER BY nome_editora"
     cursor.execute(sql)
     result = cursor.fetchall()
     print("Lista de editoras cadastradas (em ordem alfabética): ")
@@ -90,12 +102,15 @@ def list_book_publisher():
             print(f"- {nome_editora} (local não cadastrado) - ID: {id_editora}")
     max_id.sort()
     conn.close()
-    return max_id[-1]
+    if max_id:
+        return max_id[-1]
+    else:
+        return 0
 
 def list_book_category():
     conn = start_connection()
     cursor = conn.cursor()
-    sql = "SELECT id_categoria, nome_categoria FROM categorias ORDER BY nome_categoria"
+    sql = "SELECT id_categoria, nome_categoria FROM biblioteca.categorias ORDER BY nome_categoria"
     cursor.execute(sql)
     result = cursor.fetchall()
     print("Lista de categorias cadastradas (em ordem alfabética): ")
@@ -105,9 +120,12 @@ def list_book_category():
         print(f"- {nome_categoria} - ID: {id_categoria}")
     max_id.sort()
     conn.close()
-    return max_id[-1]
+    if max_id:
+        return max_id[-1]
+    else:
+        return 0
 
-def add_new_book():
+def add_new_book(user):
     next = 0
     counter = (list_book_author() + 1)
     while next == 0:
@@ -119,7 +137,7 @@ def add_new_book():
                 author = input("Digite o nome do novo autor: ")
                 conn = start_connection()
                 cursor = conn.cursor()
-                sql = "INSERT INTO autores(nome_autor) VALUES (%s)"
+                sql = "INSERT INTO biblioteca.autores(nome_autor) VALUES (%s)"
                 cursor.execute(sql, [author])
                 conn.commit()
                 conn.close()
@@ -154,7 +172,7 @@ def add_new_book():
                 publisher_location = input("Digite o local da editora: ")
                 conn = start_connection()
                 cursor = conn.cursor()
-                sql = "INSERT INTO editoras(nome_editora, local_editora) VALUES (%s, %s)"
+                sql = "INSERT INTO biblioteca.editoras(nome_editora, local_editora) VALUES (%s, %s)"
                 cursor.execute(sql, [publisher_name, publisher_location])
                 conn.commit()
                 conn.close()
@@ -184,7 +202,7 @@ def add_new_book():
             next = 5
             break
         except Exception as year_error:
-            print(f"Erro ao tentar adicionar o ISBN do livro: {year_error}")
+            print(f"Erro ao tentar adicionar o ano da edição do livro: {year_error}")
 
     system('cls')
     while next == 5:
@@ -206,7 +224,7 @@ def add_new_book():
                 category = input("Digite o nome da nova categoria: ")
                 conn = start_connection()
                 cursor = conn.cursor()
-                sql = "INSERT INTO categorias(nome_categoria) VALUES (%s)"
+                sql = "INSERT INTO biblioteca.categorias(nome_categoria) VALUES (%s)"
                 cursor.execute(sql, [category])
                 conn.commit()
                 conn.close()
@@ -226,8 +244,8 @@ def add_new_book():
             book_quantity = int(input(f"Digite a quantidade de volumes a serem disponibilizados: "))
             conn = start_connection()
             cursor = conn.cursor()
-            sql = "INSERT INTO  livros(id_autor, titulo_livro, id_editora, isbn_livro, ano_livro, idioma_livro, id_categoria, quantidade) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-            cursor.execute(sql, [id_author, book_title, id_publisher, book_isbn, book_year, book_language, id_category, book_quantity])
+            sql = "INSERT INTO biblioteca.livros(id_autor, titulo_livro, id_editora, isbn_livro, ano_livro, idioma_livro, id_categoria, quantidade_catalogo, id_funcionario, quantidade_reservado, quantidade_locado) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 0, 0)"
+            cursor.execute(sql, [id_author, book_title, id_publisher, book_isbn, book_year, book_language, id_category, book_quantity, user[0]])
             conn.commit()
             conn.close()
             system('cls')
@@ -252,7 +270,7 @@ def remove_book():
             elif id_delete in range (1, max_id + 1):
                 conn = start_connection()
                 cursor = conn.cursor()
-                sql = "DELETE FROM livros WHERE id_livro = %s"
+                sql = "DELETE FROM biblioteca.livros WHERE id_livro = %s"
                 cursor.execute(sql, [id_delete])
                 conn.commit()
                 conn.close()

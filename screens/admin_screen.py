@@ -1,5 +1,5 @@
 from os import system
-from services.admin_services import add_admin, list_books
+from services.admin_services import add_admin, list_books, add_new_book
 import pwinput
 
 def admin_screen(user):
@@ -8,7 +8,8 @@ def admin_screen(user):
             print(f"TELA ADMIN\nBem-vindo {user[2]}")
             print("1 - Cadastrar um novo administrador")
             print("2 - Listar livros cadastrados")
-            print("3 - Sair")
+            print("3 - Adicionar um novo livro ao catálogo")
+            print("4 - Sair")
             opc = int(input("Selecione a opção: "))
             match opc:
                 case 1:
@@ -20,6 +21,8 @@ def admin_screen(user):
                 case 2:
                     list_books()
                 case 3:
+                    add_new_book(user)
+                case 4:
                     system('cls')
                     print("Saindo...")
                     break

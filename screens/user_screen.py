@@ -22,11 +22,14 @@ def user_screen(user):
                     print("Saindo...")
                     break
                 case 4:
-                    registration = input("Digite a matrícula do  aluno: ")
                     name = input("Digite o nome do  aluno: ")
                     email = input("Digite o email do  aluno:")
                     password = ("Digite a senha do aluno : ")
-                    edit_student_data(registration, name, email, password)
+                    edit_student_data(name, email, password)
+                case 5:
+                    system('cls')
+                    print("Saindo...")
+                    break
                 case _:
                     system('cls')
                     print("Opção inválida")          
