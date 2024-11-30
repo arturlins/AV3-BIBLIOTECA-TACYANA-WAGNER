@@ -1,6 +1,8 @@
 from os import system
+import psycopg2.extras
 from config.db import start_connection
 from config.security import check_password, encrypt_password
+from utils.utils import get_book_id, list_books
 
 def add_admin(registration, name, email, password):
     try:
@@ -16,55 +18,8 @@ def add_admin(registration, name, email, password):
         print(f"Erro ao adicionar o administrador: {error_admin}")
     finally:
         conn.close()
-
-def get_book_id():
-    conn = start_connection()
-    cursor = conn.cursor()
-    sql = "SELECT * FROM biblioteca.livros"
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    max_id = []
-    for id_livro, _, _, _, _, _, _, _, _, _, _, _ in result:
-        max_id.append(id_livro)
-    max_id.sort()
-    conn.close()
-    if max_id:
-        return max_id[-1]
-    else:
-        return 0
     
-
-def list_books():
-    conn = start_connection()
-    cursor = conn.cursor()
-    sql = "SELECT id_livro, titulo_livro, nome_autor, nome_editora, nome_categoria, ano_livro, idioma_livro, isbn_livro, quantidade_catalogo, quantidade_reservado, quantidade_locado from biblioteca.livros JOIN biblioteca.autores ON livros.id_autor = autores.id_autor JOIN biblioteca.editoras ON livros.id_editora = editoras.id_editora JOIN biblioteca.categorias ON livros.id_categoria = categorias.id_categoria ORDER BY biblioteca.livros.titulo_livro"
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    print("Lista de todos os livros cadastrados (em ordem alfabética): ")
-    max_id = []
-    for id_livro, titulo_livro, nome_autor, nome_editora, nome_categoria, ano_livro, idioma_livro, isbn_livro, quantidade_catalogo, quantidade_reservado, quantidade_locado in result:
-        max_id.append(id_livro)
-        print(f"- TÍTULO: {titulo_livro}")
-        print(f"- AUTOR: {nome_autor}")
-        print(f"- ID DO LIVRO: {id_livro}")
-        print(f"- EDITORA: {nome_editora}")
-        print(f"- CATEGORIA: {nome_categoria}")
-        print(f"- ANO DA EDIÇÃO: {ano_livro}")
-        print(f"- IDIOMA DO LIVRO: {idioma_livro}")
-        print(f"- ISBN DO LIVRO: {isbn_livro}")
-        print(f"- QUANTIDADE DE VOLUMES NO CATÁLOGO: {quantidade_catalogo}")
-        print(f"- QUANTIDADE DE VOLUMES RESERVADOS: {quantidade_reservado}")
-        print(f"- QUANTIDADE DE VOLUMES LOCADOS: {quantidade_locado}")
-        print(f"- QUANTIDADE DE VOLUMES DISPONÍVEIS PARA RESERVA: {quantidade_catalogo - (quantidade_reservado + quantidade_locado)}")
-        print(f"\n-----------------------------------------------------------------------------------------------------------\n")
-    max_id.sort()
-    conn.close()
-    if max_id:
-        return max_id[-1]
-    else:
-        return 0
-
-def list_books_simpler():
+def list_books_simpler(): #atualizar sql query
     conn = start_connection()
     cursor = conn.cursor()
     sql = "SELECT id_livro, titulo_livro, nome_autor FROM biblioteca.livros JOIN biblioteca.autores ON livros.id_autor = autores.id_autor ORDER BY biblioteca.livros.titulo_livro"
@@ -85,7 +40,7 @@ def list_books_simpler():
     else:
         return 0
 
-def list_book_author():
+def list_book_author(): #refazer
     conn = start_connection()
     cursor = conn.cursor()
     sql = "SELECT id_autor, nome_autor FROM biblioteca.autores ORDER BY nome_autor"
@@ -344,48 +299,72 @@ def add_new_book():
             book_quantity = int(input(f"Digite a quantidade de volumes a serem disponibilizados: "))
             conn = start_connection()
             cursor = conn.cursor()
-            sql = "INSERT INTO biblioteca.livros(id_autor, titulo_livro, id_editora, isbn_livro, ano_livro, idioma_livro, id_categoria, quantidade_catalogo, id_funcionario, quantidade_reservado, quantidade_locado) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 1, 0, 0)"
+            sql = "INSERT INTO biblioteca.livros(titulo_livro, id_editora, isbn_livro, ano_livro, idioma_livro, id_categoria, quantidade_catalogo, id_funcionario, quantidade_reservado, quantidade_locado) VALUES (%s, %s, %s, %s, %s, %s, %s, 1, 0, 0)"
             #cursor.execute(sql, [id_author, book_title, id_publisher, book_isbn, book_year, book_language, id_category, book_quantity, user[0]])
-            cursor.execute(sql, [id_author, book_title, id_publisher, book_isbn, book_year, book_language, id_category, book_quantity])
+            cursor.execute(sql, [book_title, id_publisher, book_isbn, book_year, book_language, id_category, book_quantity])
             conn.commit()
             conn.close()
-            if max_author == 1:
-                current_book_id = get_book_id()
-                conn.close()
+            index = 0
+            current_book_id = get_book_id()
+            author_index = authors[index]
+            # print(f"current_book_id {current_book_id}")
+            # print(f"authors {authors}")
+            # print(f"authors[0] {authors[0]}")
+            # print(f"authors[index] {authors[index]}")
+            # print(f"author_index {author_index}")
+            for i in range(max_author):
                 conn = start_connection()
                 cursor = conn.cursor()
-                sql = "INSERT INTO biblioteca.autores_do_livro(id_livro, id_autor) VALUES ('%s', '%s')"
-                cursor.execute(sql, [current_book_id, id_author])
+                sql = "INSERT INTO biblioteca.autores_do_livro(id_livro, id_autor) VALUES (%s, %s)"
+                cursor.execute(sql, [current_book_id, author_index])
                 conn.commit()
                 conn.close()
-                #system('cls')
-                print("Livro adicionado com sucesso")
-                break
-            elif max_author > 1:
-                index = 0
-                current_book_id = get_book_id()
-                author_index = authors[index]
-                print(f"current_book_id {current_book_id}")
-                print(f"authors {authors}")
-                print(f"authors[0] {authors[0]}")
+                author_index += 1
+                #index += 1
+                print(max_author)
+                print(authors)
                 print(f"authors[index] {authors[index]}")
                 print(f"author_index {author_index}")
-                for i in range(max_author):
-                    conn = start_connection()
-                    cursor = conn.cursor()
-                    sql = "INSERT INTO biblioteca.autores_do_livro(id_livro, id_autor) VALUES (%s, %s)"
-                    cursor.execute(sql, [current_book_id, author_index])
-                    conn.commit()
-                    conn.close()
-                    author_index += 1
-                    #index += 1
-                    print(max_author)
-                    print(authors)
-                    print(f"authors[index] {authors[index]}")
-                    print(f"author_index {author_index}")
-                #system('cls')
-                print("Livro adicionado com sucesso")
-                #break
+            #system('cls')
+            print("Livro adicionado com sucesso")
+            #break
+            # if max_author == 1:
+            #     current_book_id = get_book_id()
+            #     conn.close()
+            #     conn = start_connection()
+            #     cursor = conn.cursor()
+            #     sql = "INSERT INTO biblioteca.autores_do_livro(id_livro, id_autor) VALUES ('%s', '%s')"
+            #     cursor.execute(sql, [current_book_id, id_author])
+            #     conn.commit()
+            #     conn.close()
+            #     #system('cls')
+            #     print("Livro adicionado com sucesso")
+            #     break
+            # elif max_author > 1:
+            #     index = 0
+            #     current_book_id = get_book_id()
+            #     author_index = authors[index]
+            #     print(f"current_book_id {current_book_id}")
+            #     print(f"authors {authors}")
+            #     print(f"authors[0] {authors[0]}")
+            #     print(f"authors[index] {authors[index]}")
+            #     print(f"author_index {author_index}")
+            #     for i in range(max_author):
+            #         conn = start_connection()
+            #         cursor = conn.cursor()
+            #         sql = "INSERT INTO biblioteca.autores_do_livro(id_livro, id_autor) VALUES (%s, %s)"
+            #         cursor.execute(sql, [current_book_id, author_index])
+            #         conn.commit()
+            #         conn.close()
+            #         author_index += 1
+            #         #index += 1
+            #         print(max_author)
+            #         print(authors)
+            #         print(f"authors[index] {authors[index]}")
+            #         print(f"author_index {author_index}")
+            #     #system('cls')
+            #     print("Livro adicionado com sucesso")
+            #     #break
         except ValueError:
             print("Valor inválido")
         except Exception as quantity_error:
