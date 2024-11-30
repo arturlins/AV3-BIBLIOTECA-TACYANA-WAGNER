@@ -7,10 +7,10 @@ import pwinput
 while True:
     try:            
         print("Bem-vindo à Biblioteca do Cesmac!\nEscolha uma opção abaixo: ")
-        print("1 - Criar cadastro")
-        print("2 - Fazer Login - Alunos")
-        print("3 - Fazer Login - Funcionários")
-        print("4 - Sair")
+        print("1) Criar cadastro")
+        print("2) Fazer Login - Alunos")
+        print("3) Fazer Login - Funcionários")
+        print("4) Sair")
         opc = int(input("Selecione a opção: "))
         match opc:
             case 1:

@@ -3,6 +3,7 @@ from services.admin_services import add_admin, list_books, add_new_book
 import pwinput
 
 def admin_screen(user):
+    system('cls')
     while True:
         try:            
             print(f"TELA ADMIN\nBem-vindo {user[2]}")
