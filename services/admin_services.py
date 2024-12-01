@@ -2,7 +2,7 @@ from os import system
 import psycopg2.extras
 from config.db import start_connection
 from config.security import check_password, encrypt_password
-from utils.utils import get_book_id, list_books
+from utils.utils import get_book_id, get_author_id, get_category_id, get_publisher_id, list_books, list_books_authors_only, list_all_book_authors, list_books_simpler
 
 def add_admin(registration, name, email, password):
     try:
@@ -18,45 +18,6 @@ def add_admin(registration, name, email, password):
         print(f"Erro ao adicionar o administrador: {error_admin}")
     finally:
         conn.close()
-    
-def list_books_simpler(): #atualizar sql query
-    conn = start_connection()
-    cursor = conn.cursor()
-    sql = "SELECT id_livro, titulo_livro, nome_autor FROM biblioteca.livros JOIN biblioteca.autores ON livros.id_autor = autores.id_autor ORDER BY biblioteca.livros.titulo_livro"
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    print("Lista de todos os livros cadastrados (em ordem alfabética): ")
-    max_id = []
-    for id_livro, titulo_livro, nome_autor in result:
-        max_id.append(id_livro)
-        print(f"- TÍTULO: {titulo_livro}")
-        print(f"- AUTOR: {nome_autor}")
-        print(f"- ID DO LIVRO: {id_livro}")
-        print(f"\n-----------------------------------------------------------------------------------------------------------\n")
-    max_id.sort()
-    conn.close()
-    if max_id:
-        return max_id[-1]
-    else:
-        return 0
-
-def list_book_author(): #refazer
-    conn = start_connection()
-    cursor = conn.cursor()
-    sql = "SELECT id_autor, nome_autor FROM biblioteca.autores ORDER BY nome_autor"
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    print("Lista de autores cadastrados (em ordem alfabética): ")
-    max_id = []
-    for id_autor, nome_autor in result:
-        max_id.append(id_autor)
-        print(f"- {nome_autor} - ID: {id_autor}")
-    max_id.sort()
-    conn.close()
-    if max_id:
-        return max_id[-1]
-    else:
-        return 0
 
 def list_book_publisher():
     conn = start_connection()
@@ -69,7 +30,7 @@ def list_book_publisher():
     for id_editora, nome_editora, local_editora in result:
         max_id.append(id_editora)
         if local_editora:
-            print(f"- {nome_editora} - ID: {id_editora}")
+            print(f"- {nome_editora} | ID: {id_editora}")
         else:
             print(f"- {nome_editora} (local não cadastrado) - ID: {id_editora}")
     max_id.sort()
@@ -92,13 +53,9 @@ def list_book_category():
         print(f"- {nome_categoria} - ID: {id_categoria}")
     max_id.sort()
     conn.close()
-    if max_id:
-        return max_id[-1]
-    else:
-        return 0
 
 def add_book_author():
-    list_book_author()
+    list_all_book_authors()
     while True:
         try:
             author_name = input("Digite o nome do novo autor ou digite 0 para cancelar: ")
@@ -119,7 +76,8 @@ def add_book_author():
             print(f"Erro ao tentar adicionar o autor: {author_error}")
 
 def remove_book_author():
-    max_id = list_book_author()
+    #max_id = list_all_book_authors()
+    max_id = get_author_id() - 1
     while True:
         try:
             id_delete = int(input("Digite o ID do autor que você quer remover ou digite 0 para cancelar: "))
@@ -151,7 +109,9 @@ def add_new_book():
         while True:
             try:
                 max_author = int(input("Quantos autores escreveram o livro a ser cadastrado?: "))
-                counter = (list_book_author() + 1)
+                #counter = (list_all_book_authors() + 1)
+                list_all_book_authors()
+                counter = get_author_id()
                 if max_author == 1:
                     try:
                         id_author = int(input(f"Digite o ID do autor ou digite {counter} para adicionar um novo: "))
@@ -166,7 +126,9 @@ def add_new_book():
                             conn.commit()
                             conn.close()
                             authors.append(id_author)
-                            counter += 1
+                            #counter += 1
+                            next = 1
+                            break
                         elif id_author in range(1, (counter + 1)):
                             next = 1
                             break
@@ -176,7 +138,7 @@ def add_new_book():
                 elif max_author > 1:
                     for i in range(1, max_author + 1):
                         try:
-                            print(authors)
+                            #print(authors)
                             id_author = int(input(f"Digite o ID do autor {i}/{max_author} ou digite {counter} para adicionar um novo: "))
                             if id_author <= 0 or id_author > counter:
                                 print("Valor inválido")
@@ -206,7 +168,7 @@ def add_new_book():
         next = 1
         break
     
-    #system('cls')
+    system('cls')
     while next == 1:
         try:
             book_title = input(f"Digite o título do livro: ")
@@ -216,7 +178,8 @@ def add_new_book():
             print(f"Erro ao tentar adicionar o livro: {title_error}")
 
     system('cls')
-    counter = (list_book_publisher() + 1)
+    counter = get_publisher_id()
+    list_book_publisher()
     while next == 2:
         try:
             id_publisher = int(input(f"Digite o ID da editora ou digite {counter} para adicionar uma nova: "))
@@ -224,7 +187,8 @@ def add_new_book():
                 print("Valor inválido")
             elif id_publisher == counter:
                 publisher_name = input("Digite o nome da editora: ")
-                publisher_location = input("Digite o local da editora ou aperte enter para deixar em branco: ")
+                system('cls')
+                publisher_location = input("Digite o local da editora (ou aperte enter para deixar em branco): ")
                 conn = start_connection()
                 cursor = conn.cursor()
                 sql = "INSERT INTO biblioteca.editoras(nome_editora, local_editora) VALUES (%s, %s)"
@@ -244,16 +208,16 @@ def add_new_book():
     system('cls')
     while next == 3:
         try:
-            book_isbn = input(f"Digite o ISBN do livro: ")
+            book_isbn = input(f"Digite o ISBN do livro (ou aperte enter para deixar em branco): ")
             next = 4
             break
         except Exception as isbn_error:
-            print(f"Erro ao tentar adicionar o ISBN do livro: {isbn_error}")
+            print(f"Erro ao tentar adicionar o ISBN do livro (ou aperte enter para deixar em branco): {isbn_error}")
 
     system('cls')
     while next == 4:
         try:
-            book_year = input(f"Digite o ano da edição do livro: ")
+            book_year = input(f"Digite o ano da edição do livro (ou aperte enter para deixar em branco): ")
             next = 5
             break
         except Exception as year_error:
@@ -262,14 +226,15 @@ def add_new_book():
     system('cls')
     while next == 5:
         try:
-            book_language = input(f"Digite o idioma em que o livro foi publicado ou aperte enter para deixar em branco: ")
+            book_language = input(f"Digite o idioma em que o livro foi publicado (ou aperte enter para deixar em branco): ")
             next = 6
             break
         except Exception as language_error:
             print(f"Erro ao tentar adicionar o ISBN do livro: {language_error}")
 
     system('cls')
-    counter = (list_book_category() + 1)
+    counter = get_category_id 
+    list_book_category()
     while next == 6:
         try:
             id_category = int(input(f"Digite o ID da categoria ou digite {counter} para adicionar uma nova: "))
@@ -293,25 +258,26 @@ def add_new_book():
         except Exception as category_error:
             print(f"Erro ao tentar adicionar a categoria: {category_error}")
         
-    #system('cls')
+    system('cls')
     while next == 7:
         try:
+            current_book_id = get_book_id()
             book_quantity = int(input(f"Digite a quantidade de volumes a serem disponibilizados: "))
             conn = start_connection()
             cursor = conn.cursor()
             sql = "INSERT INTO biblioteca.livros(titulo_livro, id_editora, isbn_livro, ano_livro, idioma_livro, id_categoria, quantidade_catalogo, id_funcionario, quantidade_reservado, quantidade_locado) VALUES (%s, %s, %s, %s, %s, %s, %s, 1, 0, 0)"
+            #sql = "INSERT INTO biblioteca.livros(titulo_livro, id_editora, isbn_livro, ano_livro, idioma_livro, id_categoria, quantidade_catalogo, id_funcionario, quantidade_reservado, quantidade_locado) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 0, 0)"
             #cursor.execute(sql, [id_author, book_title, id_publisher, book_isbn, book_year, book_language, id_category, book_quantity, user[0]])
             cursor.execute(sql, [book_title, id_publisher, book_isbn, book_year, book_language, id_category, book_quantity])
             conn.commit()
             conn.close()
             index = 0
-            current_book_id = get_book_id()
             author_index = authors[index]
-            # print(f"current_book_id {current_book_id}")
-            # print(f"authors {authors}")
-            # print(f"authors[0] {authors[0]}")
-            # print(f"authors[index] {authors[index]}")
-            # print(f"author_index {author_index}")
+            print(f"current_book_id {current_book_id}")
+            print(f"authors {authors}")
+            print(f"authors[0] {authors[0]}")
+            print(f"authors[index] {authors[index]}")
+            print(f"author_index {author_index}")
             for i in range(max_author):
                 conn = start_connection()
                 cursor = conn.cursor()
@@ -321,10 +287,10 @@ def add_new_book():
                 conn.close()
                 author_index += 1
                 #index += 1
-                print(max_author)
-                print(authors)
-                print(f"authors[index] {authors[index]}")
-                print(f"author_index {author_index}")
+                # print(max_author)
+                # print(authors)
+                # #print(f"authors[index] {authors[index]}")
+                # print(f"author_index {author_index}")
             #system('cls')
             print("Livro adicionado com sucesso")
             #break
@@ -374,8 +340,10 @@ def add_new_book():
             break
 
 def remove_book():
-    counter = list_books_simpler()
-    max_id = counter[-1]
+    list_books_simpler()
+    max_id = get_book_id()
+    # counter = list_books_simpler()
+    # max_id = counter[-1]
     while True:
         try:
             id_delete = int(input("Digite o ID do livro que você quer remover do banco de dados: "))
@@ -384,8 +352,12 @@ def remove_book():
             elif id_delete in range (1, max_id + 1):
                 conn = start_connection()
                 cursor = conn.cursor()
-                sql = "DELETE FROM biblioteca.livros WHERE id_livro = %s"
+                sql_fk = "DELETE FROM biblioteca.autores_do_livro WHERE autores_do_livro.id_livro = %s"
+                cursor.execute(sql_fk, [id_delete])
+                sql = "DELETE FROM biblioteca.livros WHERE livros.id_livro = %s"
                 cursor.execute(sql, [id_delete])
+                # sql = "DELETE FROM biblioteca.livros USING biblioteca.autores_do_livro WHERE livros.id_livro = autores_do_livro.id_livro AND livros.id_livro = %s AND autores_do_livro.id_livro = %s"
+                # cursor.execute(sql, [id_delete, id_delete])
                 conn.commit()
                 conn.close()
                 print("Livro removido com sucesso")
@@ -395,7 +367,7 @@ def remove_book():
         except ValueError:
             print("Valor inválido")
         except Exception as remove_book_error:
-            print(f"Erro ao tentar adicionar a quantidade de volumes disponíveis: {remove_book_error}")
+            print(f"Erro ao tentar remover o livro: {remove_book_error}")
 
 
 # def create_task(user_id, title):
