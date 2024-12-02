@@ -3,6 +3,7 @@ from services.admin_services import list_books, list_book_category, add_new_book
 from services.students_services import book_reservation, list_user_reservations, cancel_book_reservation, edit_student_name, edit_student_email, edit_student_password
 from services.users_services import login_worker
 from utils.utils import get_book_id, list_books, list_books_authors_only, list_books_simpler, get_publisher_id, get_category_id, get_author_id
+from services.searching_services import book_search, student_search
 
 #list_books()
 #list_book_category()
@@ -37,4 +38,6 @@ from utils.utils import get_book_id, list_books, list_books_authors_only, list_b
 #edit_student_password()
 #edit_worker_name()
 #edit_worker_email()
-edit_worker_password()
+#edit_worker_password()
+#book_search()
+student_search()

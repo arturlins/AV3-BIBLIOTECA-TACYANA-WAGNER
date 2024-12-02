@@ -4,6 +4,7 @@ from config.db import start_connection
 from config.security import check_password, encrypt_password
 from utils.utils import get_book_id, get_author_id, get_category_id, get_publisher_id, list_books, list_books_authors_only, list_all_book_authors, list_books_simpler, list_book_publisher, list_book_category, get_title_by_id, get_quantity_by_id, get_author_by_id, get_worker_name_by_id, get_worker_email_by_id
 import pwinput
+from datetime import date
 
 def add_admin(registration, name, email, password):
     try:
@@ -480,6 +481,55 @@ def edit_worker_password():
             print("Erro")
         except Exception as edit_password_error:
             print(f"Erro ao tentar editar o livro: {edit_password_error}")
+
+def book_rent():
+    #max_id = (get_book_id() - 1)
+    system('cls')
+    list_books()
+    while True:
+        try:
+            book_id = input("Digite o ID do livro a ser reservado: ")
+            conn = start_connection()
+            cursor = conn.cursor()
+            sql = "SELECT quantidade_catalogo, quantidade_reservado, quantidade_locado FROM biblioteca.livros WHERE id_livro = %s"
+            cursor.execute(sql, (book_id))
+            result = cursor.fetchone()
+            #sql2 = "SELECT * FROM biblioteca.reservas WHERE id_aluno = %s"
+            sql2 = "SELECT * FROM biblioteca.reservas WHERE id_aluno = 1"
+            #cursor.execute(sql, (user[0]))
+            cursor.execute(sql2)
+            result2 = cursor.fetchall()
+            list_reservations = []
+            for _, id_livro, _, _, _ in result2:
+                list_reservations.append(id_livro)
+            #print(list_reservations)
+            if book_id in list_reservations:
+                print("Você já fez uma reserva desse livro")
+            elif result[1] + result [2] >= result[0]:
+                print("Livro indisponível para reserva")
+            else:
+                print("Livro disponível para reserva")
+                date_reservation = date.today()
+                deadline_reservation = date_reservation + timedelta(days=2)
+                sql = "INSERT INTO biblioteca.reservas(id_livro, id_aluno, data_reserva, prazo_reserva) VALUES (%s, '1', %s, %s) RETURNING id_reserva"
+                #sql = "INSERT INTO biblioteca.reservas(id_livro, id_aluno, data_reserva, prazo_reserva) VALUES (%s, %s, %s, %s) RETURNING id_reserva"
+                cursor.execute(sql, (book_id, date_reservation, deadline_reservation))
+                #cursor.execute(sql, (book_id, user[0], date_reservation, deadline_reservation))
+                reservation_id = cursor.fetchone()[0]
+                sql2 = "UPDATE biblioteca.livros SET quantidade_reservado = quantidade_reservado + 1 WHERE id_livro = %s"
+                cursor.execute(sql2, (book_id))
+                conn.commit()
+                cursor.close()
+                conn.close()
+                print(f"Reserva efetuada com sucesso. Você tem dois dias para ir buscar o livro na biblioteca | ID da reserva: {reservation_id}")
+                break
+        except ValueError:
+            print("Valor inválido")
+        except Exception as reservation_error:
+            print(f"Erro ao realizar login: {reservation_error}")
+
+
+
 
 # def create_task(user_id, title):
 #     conn = criar_conexao()
