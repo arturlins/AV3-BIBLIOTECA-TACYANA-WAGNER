@@ -1,18 +1,6 @@
 from config.db import start_connection
 
 def get_book_id():
-    # conn = start_connection()
-    # cursor = conn.cursor()
-    # sql = "SELECT * FROM biblioteca.livros"
-    # cursor.execute(sql)
-    # result = cursor.fetchall()
-    #max_id = []
-    # for id_livro, _, _, _, _, _, _, _, _, _, _ in result:
-    #     max_id.append(id_livro)
-    # max_id.sort()
-    # print(cursor.rowcount)
-    # print(max_id[-1])
-    # conn.close()
     conn = start_connection()
     cursor = conn.cursor()
     sql = "SELECT last_value + 1 FROM pg_sequences WHERE schemaname = 'biblioteca' AND sequencename = 'livros_id_livro_seq'"
@@ -75,16 +63,9 @@ def list_all_book_authors():
     cursor.execute(sql)
     result = cursor.fetchall()
     print("Lista de todos os autores cadastrados (em ordem alfabética): ")
-    max_id = []
     for id_autor, nome_autor in result:
-        #max_id.append(id_autor)
         print(f"- {nome_autor} | ID: {id_autor}")
-    # max_id.sort()
     conn.close()
-    # if max_id:
-    #     return max_id[-1]
-    # else:
-    #     return 0
 
 def list_books_authors_only(id_livro):
     conn = start_connection()
@@ -102,9 +83,7 @@ def list_books():
     cursor.execute(sql)
     result = cursor.fetchall()
     print("Lista de todos os livros cadastrados (em ordem alfabética): ")
-    max_id = []
     for id_livro, titulo_livro, nome_editora, nome_categoria, ano_livro, idioma_livro, isbn_livro, quantidade_catalogo, quantidade_reservado, quantidade_locado in result:
-                max_id.append(id_livro)
                 print(f"- TÍTULO: {titulo_livro}")
                 list_books_authors_only(id_livro)
                 print(color.BOLD + f"- ID DO LIVRO: {id_livro}" + color.END)
@@ -129,12 +108,7 @@ def list_books():
                 print(f"- QUANTIDADE DE VOLUMES LOCADOS: {quantidade_locado}")
                 print(f"- QUANTIDADE DE VOLUMES DISPONÍVEIS PARA RESERVA: {quantidade_catalogo - (quantidade_reservado + quantidade_locado)}")
                 print(f"\n-----------------------------------------------------------------------------------------------------------\n")
-    max_id.sort()
     conn.close()
-    if max_id:
-        return max_id[-1]
-    else:
-        return 0
 
 def list_books_simpler(): #atualizar sql query
     conn = start_connection()
@@ -143,19 +117,36 @@ def list_books_simpler(): #atualizar sql query
     cursor.execute(sql)
     result = cursor.fetchall()
     print("Lista de todos os livros cadastrados (em ordem alfabética): ")
-    max_id = []
     for id_livro, titulo_livro in result:
-        max_id.append(id_livro)
         print(f"- TÍTULO: {titulo_livro}")
         list_books_authors_only(id_livro)
         print(color.BOLD + f"- ID DO LIVRO: {id_livro}" + color.END)
         print(f"\n-----------------------------------------------------------------------------------------------------------\n")
-    max_id.sort()
     conn.close()
-    if max_id:
-        return max_id[-1]
-    else:
-        return 0
+
+def list_book_publisher():
+    conn = start_connection()
+    cursor = conn.cursor()
+    sql = "SELECT id_editora, nome_editora, local_editora FROM biblioteca.editoras ORDER BY nome_editora"
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    print("Lista de editoras cadastradas (em ordem alfabética): ")
+    for id_editora, nome_editora, local_editora in result:
+        if local_editora:
+            print(f"- {nome_editora} ({local_editora}) | ID: {id_editora}")
+        else:
+            print(f"- {nome_editora} (local não cadastrado) - ID: {id_editora}")
+
+def list_book_category():
+    conn = start_connection()
+    cursor = conn.cursor()
+    sql = "SELECT id_categoria, nome_categoria FROM biblioteca.categorias ORDER BY nome_categoria"
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    print("Lista de categorias cadastradas (em ordem alfabética): ")
+    for id_categoria, nome_categoria in result:
+        print(f"- {nome_categoria} - ID: {id_categoria}")
+    conn.close()
 
 class color:
 #    PURPLE = '\033[95m'
