@@ -116,7 +116,33 @@ def get_student_email_by_id(id_edit):
         return student
     else:
         return 0
+
+def get_worker_name_by_id(id_edit):
+    conn = start_connection()
+    cursor = conn.cursor()
+    sql = "SELECT nome_funcionario FROM biblioteca.funcionarios WHERE id_funcionario = %s"
+    cursor.execute(sql, [id_edit])
+    worker = cursor.fetchone()[0]
+    cursor.close()
+    conn.close()
+    if worker:
+        return worker
+    else:
+        return 0
     
+def get_worker_email_by_id(id_edit):
+    conn = start_connection()
+    cursor = conn.cursor()
+    sql = "SELECT email_funcionario FROM biblioteca.funcionarios WHERE id_funcionario = %s"
+    cursor.execute(sql, [id_edit])
+    worker = cursor.fetchone()[0]
+    cursor.close()
+    conn.close()
+    if worker:
+        return worker
+    else:
+        return 0
+
 # def get_student_password_by_id(id_edit):
 #     conn = start_connection()
 #     cursor = conn.cursor()
