@@ -1,10 +1,9 @@
 from os import system
 from utils.utils import list_books
-from services.students_services import book_reservation, cancel_book_reservation, edit_student_data
-#from screens.crud_student import 
+from services.students_services import book_reservation, cancel_book_reservation, edit_student_name, edit_student_email, edit_student_password
 
 def user_screen(user):
-       while True:
+    while True:
         try:            
             print(f"TELA USUÁRIO\nBem-vindo {user[2]}")
             print("1 - Listar livros do catálogo")
@@ -21,7 +20,7 @@ def user_screen(user):
                 case 3:
                     cancel_book_reservation()
                 case 4:
-                    edit_student_data(user)
+                    edit_student_data_screen(user)
                 case 5:
                     system('cls')
                     print("Saindo...")
@@ -32,7 +31,32 @@ def user_screen(user):
         except ValueError:
             system('cls')
             print("Opção inválida")
-   
+
+def edit_student_data_screen(user):
+    while True:
+        try:            
+            print(f"EDITAR DADOS PESSOAIS")
+            print("1 - Alterar nome")
+            print("2 - Alterar e-mail")
+            print("3 - Alterar a senha")
+            print("4 - Voltar ao menu anterior")
+            opc = int(input("Selecione a opção: "))
+            match opc:
+                case 1:
+                    edit_student_name(user)
+                case 2:
+                    edit_student_email(user)
+                case 3:
+                    edit_student_password(user)
+                case 4:
+                    user_screen(user)
+                case _:
+                    system('cls')
+                    print("Opção inválida")          
+        except ValueError:
+            system('cls')
+            print("Opção inválida")
+
     # while(True):
     #     print(f"Bem-vindo {user[2]}")
     #     print("""

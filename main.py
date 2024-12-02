@@ -22,12 +22,6 @@ while True:
                 authenticated_user = login_student(email, password)
                 if authenticated_user:
                     user_screen(authenticated_user)
-                # privilege_check(email)
-                # privilege = privilege_check(email)
-                # if authenticated_user and privilege == True:
-                #         admin_screen(authenticated_user)
-                # elif authenticated_user and privilege == False:
-                #         user_screen(authenticated_user)
                 else:
                     system('cls')
                     print("Usuario ou senha inválidos!")

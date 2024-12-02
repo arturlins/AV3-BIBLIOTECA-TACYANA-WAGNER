@@ -1,8 +1,8 @@
 from os import system
 import psycopg2.extras
 from config.db import start_connection
-from config.security import check_password, encrypt_password
-from utils.utils import get_book_id, get_author_id, get_category_id, get_publisher_id, list_books, list_books_authors_only, list_all_book_authors, list_books_simpler, list_book_publisher, list_book_category, get_title_by_id, get_quantity_by_id, get_author_by_id, get_worker_name_by_id, get_worker_email_by_id
+from config.security import encrypt_password
+from utils.utils import get_book_id, get_author_id, get_category_id, get_publisher_id, list_books, list_all_book_authors, list_books_simpler, list_book_publisher, list_book_category, get_title_by_id, get_quantity_by_id, get_author_by_id, get_worker_name_by_id, get_worker_email_by_id
 import pwinput
 from datetime import date, timedelta
 
@@ -82,8 +82,8 @@ def add_new_category():
         except:
             print("Erro ao tentar adicionar uma nova categoria")
 
-#def add_new_book(user):
-def add_new_book():
+def add_new_book(user):
+#def add_new_book():
     next = 0
     authors = []
     while next == 0:
@@ -241,10 +241,10 @@ def add_new_book():
             else:
                 conn = start_connection()
                 cursor = conn.cursor()
-                sql = "INSERT INTO biblioteca.livros(titulo_livro, id_editora, isbn_livro, ano_livro, idioma_livro, id_categoria, quantidade_catalogo, id_funcionario, quantidade_reservado, quantidade_locado) VALUES (%s, %s, %s, %s, %s, %s, %s, 1, 0, 0)"
-                #sql = "INSERT INTO biblioteca.livros(titulo_livro, id_editora, isbn_livro, ano_livro, idioma_livro, id_categoria, quantidade_catalogo, id_funcionario, quantidade_reservado, quantidade_locado) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 0, 0)"
-                #cursor.execute(sql, [id_author, book_title, id_publisher, book_isbn, book_year, book_language, id_category, book_quantity, user[0]])
-                cursor.execute(sql, [book_title, id_publisher, book_isbn, book_year, book_language, id_category, book_quantity])
+                #sql = "INSERT INTO biblioteca.livros(titulo_livro, id_editora, isbn_livro, ano_livro, idioma_livro, id_categoria, quantidade_catalogo, id_funcionario, quantidade_reservado, quantidade_locado) VALUES (%s, %s, %s, %s, %s, %s, %s, 1, 0, 0)"
+                sql = "INSERT INTO biblioteca.livros(titulo_livro, id_editora, isbn_livro, ano_livro, idioma_livro, id_categoria, quantidade_catalogo, id_funcionario, quantidade_reservado, quantidade_locado) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 0, 0)"
+                cursor.execute(sql, [id_author, book_title, id_publisher, book_isbn, book_year, book_language, id_category, book_quantity, user[0]])
+                #cursor.execute(sql, [book_title, id_publisher, book_isbn, book_year, book_language, id_category, book_quantity])
                 conn.commit()
                 conn.close()
                 index = 0
@@ -401,13 +401,13 @@ def edit_books_quantities():
         except Exception as edit_book_error:
             print(f"Erro ao tentar editar a quantidade: {edit_book_error}")
 
-#def edit_worker_name(user):
-def edit_worker_name():
+def edit_worker_name(user):
+#def edit_worker_name():
     system('cls')
     while True:
         try:
-            #id_edit = user[0]
-            id_edit = 1
+            id_edit = user[0]
+            #id_edit = 1
             current_name = get_worker_name_by_id(id_edit)
             new_name = input(f"Digite o novo nome para '{current_name}' (ou aperte enter para cancelar): ")
             if new_name == '':
@@ -415,10 +415,10 @@ def edit_worker_name():
             else:
                 conn = start_connection()
                 cursor = conn.cursor()
-                #sql = "UPDATE biblioteca.funcionarios SET nome_funcionario = %s WHERE funcionarios.id_funcionario = %s"
-                sql = "UPDATE biblioteca.funcionarios SET nome_funcionario = %s WHERE funcionarios.id_funcionario = 1"
-                cursor.execute(sql, [new_name])
-                #cursor.execute(sql, [new_name, id_edit])
+                sql = "UPDATE biblioteca.funcionarios SET nome_funcionario = %s WHERE funcionarios.id_funcionario = %s"
+                #sql = "UPDATE biblioteca.funcionarios SET nome_funcionario = %s WHERE funcionarios.id_funcionario = 1"
+                #cursor.execute(sql, [new_name])
+                cursor.execute(sql, [new_name, id_edit])
                 conn.commit()
                 conn.close()
                 print(f"Nome atualizado com sucesso de '{current_name}' para '{new_name}'")
@@ -428,13 +428,13 @@ def edit_worker_name():
         except Exception as edit_author_error:
             print(f"Erro ao tentar editar o nome: {edit_author_error}")
 
-#def edit_worker_email(user):
-def edit_worker_email():
+def edit_worker_email(user):
+#def edit_worker_email():
     system('cls')
     while True:
         try:
-            #id_edit = user[0]
-            id_edit = 1
+            id_edit = user[0]
+            #id_edit = 1
             current_email = get_worker_email_by_id(id_edit)
             new_email = input(f"Digite o novo email para '{current_email}' (ou aperte enter para cancelar): ")
             if new_email == '':
@@ -442,10 +442,10 @@ def edit_worker_email():
             else:
                 conn = start_connection()
                 cursor = conn.cursor()
-                #sql = "UPDATE biblioteca.funcionarios SET email_funcionario = %s WHERE funcionarios.id_funcionario = %s"
-                sql = "UPDATE biblioteca.funcionarios SET email_funcionario = %s WHERE funcionarios.id_funcionario = 1"
-                cursor.execute(sql, [new_email])
-                #cursor.execute(sql, [new_email, id_edit])
+                sql = "UPDATE biblioteca.funcionarios SET email_funcionario = %s WHERE funcionarios.id_funcionario = %s"
+                #sql = "UPDATE biblioteca.funcionarios SET email_funcionario = %s WHERE funcionarios.id_funcionario = 1"
+                #cursor.execute(sql, [new_email])
+                cursor.execute(sql, [new_email, id_edit])
                 conn.commit()
                 conn.close()
                 print(f"E-mail atualizado com sucesso de '{current_email}' para '{new_email}'")
@@ -455,13 +455,13 @@ def edit_worker_email():
         except Exception as edit_email_error:
             print(f"Erro ao tentar editar o e-mail: {edit_email_error}")
 
-#def edit_worker_password(user):
-def edit_worker_password():
+def edit_worker_password(user):
+#def edit_worker_password():
     system('cls')
     while True:
         try:
-            #id_edit = user[0]
-            id_edit = 1
+            id_edit = user[0]
+            #id_edit = 1
             new_password = pwinput.pwinput(f"Digite a nova senha ou aperte enter para cancelar: ")
             if new_password == '':
                 break
@@ -469,10 +469,10 @@ def edit_worker_password():
                 hashed_password = encrypt_password(new_password)
                 conn = start_connection()
                 cursor = conn.cursor()
-                #sql = "UPDATE biblioteca.funcionarios SET senha_funcionario = %s WHERE funcionarios.id_funcionario = %s"
-                sql = "UPDATE biblioteca.funcionarios SET senha_funcionario = %s WHERE funcionarios.id_funcionario = 1"
-                cursor.execute(sql, [hashed_password])
-                #cursor.execute(sql, [hashed_password, id_edit])
+                sql = "UPDATE biblioteca.funcionarios SET senha_funcionario = %s WHERE funcionarios.id_funcionario = %s"
+                #sql = "UPDATE biblioteca.funcionarios SET senha_funcionario = %s WHERE funcionarios.id_funcionario = 1"
+                #cursor.execute(sql, [hashed_password])
+                cursor.execute(sql, [hashed_password, id_edit])
                 conn.commit()
                 conn.close()
                 print(f"Senha atualizada com sucesso")
@@ -482,7 +482,7 @@ def edit_worker_password():
         except Exception as edit_password_error:
             print(f"Erro ao tentar editar o livro: {edit_password_error}")
 
-def book_rent():
+def book_rent(user):
     #max_id = (get_book_id() - 1)
     system('cls')
     list_books()
@@ -494,9 +494,9 @@ def book_rent():
             sql = "SELECT quantidade_catalogo, quantidade_reservado, quantidade_locado FROM biblioteca.livros WHERE id_livro = %s"
             cursor.execute(sql, (book_id))
             result = cursor.fetchone()
-            #sql2 = "SELECT * FROM biblioteca.reservas WHERE id_aluno = %s"
-            sql2 = "SELECT * FROM biblioteca.reservas WHERE id_aluno = 1"
-            #cursor.execute(sql, (user[0]))
+            sql2 = "SELECT * FROM biblioteca.reservas WHERE id_aluno = %s"
+            #sql2 = "SELECT * FROM biblioteca.reservas WHERE id_aluno = 1"
+            cursor.execute(sql, (user[0]))
             cursor.execute(sql2)
             result2 = cursor.fetchall()
             list_reservations = []
@@ -511,10 +511,10 @@ def book_rent():
                 print("Livro disponível para reserva")
                 date_reservation = date.today()
                 deadline_reservation = date_reservation + timedelta(days=2)
-                sql = "INSERT INTO biblioteca.reservas(id_livro, id_aluno, data_reserva, prazo_reserva) VALUES (%s, '1', %s, %s) RETURNING id_reserva"
-                #sql = "INSERT INTO biblioteca.reservas(id_livro, id_aluno, data_reserva, prazo_reserva) VALUES (%s, %s, %s, %s) RETURNING id_reserva"
-                cursor.execute(sql, (book_id, date_reservation, deadline_reservation))
-                #cursor.execute(sql, (book_id, user[0], date_reservation, deadline_reservation))
+                #sql = "INSERT INTO biblioteca.reservas(id_livro, id_aluno, data_reserva, prazo_reserva) VALUES (%s, '1', %s, %s) RETURNING id_reserva"
+                sql = "INSERT INTO biblioteca.reservas(id_livro, id_aluno, data_reserva, prazo_reserva) VALUES (%s, %s, %s, %s) RETURNING id_reserva"
+                #cursor.execute(sql, (book_id, date_reservation, deadline_reservation))
+                cursor.execute(sql, (book_id, user[0], date_reservation, deadline_reservation))
                 reservation_id = cursor.fetchone()[0]
                 sql2 = "UPDATE biblioteca.livros SET quantidade_reservado = quantidade_reservado + 1 WHERE id_livro = %s"
                 cursor.execute(sql2, (book_id))
