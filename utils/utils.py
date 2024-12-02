@@ -8,7 +8,6 @@ def get_book_id():
     next_id = cursor.fetchone()[0]
     cursor.close()
     conn.close()
-    print(next_id)
     if next_id:
         return next_id
     else:
@@ -22,7 +21,6 @@ def get_author_id():
     next_id = cursor.fetchone()[0]
     cursor.close()
     conn.close()
-    print(next_id)
     if next_id:
         return next_id
     else:
@@ -36,7 +34,6 @@ def get_category_id():
     next_id = cursor.fetchone()[0]
     cursor.close()
     conn.close()
-    print(next_id)
     if next_id:
         return next_id
     else:
@@ -50,11 +47,48 @@ def get_publisher_id():
     next_id = cursor.fetchone()[0]
     cursor.close()
     conn.close()
-    print(next_id)
     if next_id:
         return next_id
     else:
         return 0
+
+def get_title_by_id(id_edit):
+    conn = start_connection()
+    cursor = conn.cursor()
+    sql = "SELECT titulo_livro FROM biblioteca.livros WHERE id_livro = %s"
+    cursor.execute(sql, [id_edit])
+    title = cursor.fetchone()[0]
+    cursor.close()
+    conn.close()
+    if title:
+        return title
+    else:
+        return 0
+
+def get_quantity_by_id(id_edit):
+    conn = start_connection()
+    cursor = conn.cursor()
+    sql = "SELECT quantidade_catalogo FROM biblioteca.livros WHERE id_livro = %s"
+    cursor.execute(sql, [id_edit])
+    quantity = cursor.fetchone()[0]
+    cursor.close()
+    conn.close()
+    if quantity:
+        return quantity
+    else:
+        return 0
+
+# def get_books_ids_list():
+#     books_ids_list = []
+#     conn = start_connection()
+#     cursor = conn.cursor()
+#     sql = "SELECT * FROM biblioteca.livros"
+#     cursor.execute(sql)
+#     result = cursor.fetchall()
+#     for id_livro, _, _, _, _, _, _, _, _, _, _ in result:
+#         books_ids_list.append(id_livro)
+#     conn.close()
+#     return books_ids_list
 
 def list_all_book_authors():
     conn = start_connection()
@@ -110,7 +144,7 @@ def list_books():
                 print(f"\n-----------------------------------------------------------------------------------------------------------\n")
     conn.close()
 
-def list_books_simpler(): #atualizar sql query
+def list_books_simpler():
     conn = start_connection()
     cursor = conn.cursor()
     sql = "SELECT livros.id_livro, titulo_livro FROM biblioteca.livros JOIN biblioteca.autores_do_livro ON autores_do_livro.id_livro = livros.id_livro GROUP BY livros.id_livro ORDER BY biblioteca.livros.titulo_livro"
