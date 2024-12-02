@@ -1,6 +1,7 @@
 from os import system
-from services.admin_services import list_books, add_new_book, remove_book, edit_books_titles, edit_books_quantities, add_book_author
-from utils.utils import list_books, list_all_book_authors
+from services.admin_services import list_books, add_new_book, remove_book, edit_books_titles, edit_books_quantities, add_book_author, remove_book_author, edit_books_authors, edit_worker_name, edit_worker_email, edit_worker_password
+from utils.utils import list_books, list_all_book_authors, list_book_publisher
+from screens.admin_screen import admin_screen
 
 def crud_admin_screen(user):
     system('cls')
@@ -19,11 +20,12 @@ def crud_admin_screen(user):
             print("9 - editar um autor do cadastrado")
             print("\nAÇÕES - EDITORAS")
             print("10 - Listar editoras cadastradas")
-            print("11 - Adicionar uma editora ao cadastrado")
-            print("12 - Remover uma editora do cadastrado")
-            print("13 - Editar uma editora do cadastrado")
-            print("\nAÇÕES - CATEGORIAS DE LIVROS")
-            print("14 - Remover uma editora do cadastrado")
+            print("11 - Voltar ao menu anterior")
+            # print("11 - Adicionar uma editora ao cadastro")
+            # print("12 - Remover uma editora do cadastrado")
+            # print("13 - Editar uma editora do cadastrado")
+            # print("\nAÇÕES - CATEGORIAS DE LIVROS")
+            # print("14 - Remover uma editora do cadastrado")
             opc = int(input("Selecione a opção: "))
             match opc:
                 case 1:
@@ -40,13 +42,45 @@ def crud_admin_screen(user):
                     list_all_book_authors()
                 case 7:
                     add_book_author()
+                case 8:
+                    remove_book_author()
+                case 9:
+                    edit_books_authors()
+                case 10:
+                    list_book_publisher()
+                case 11:
+                    system('cls')
+                    admin_screen()
+                case _:
+                    system('cls')
+                    print("Opção inválida")          
+        except ValueError:
+            system('cls')
+            print("Opção inválida")
 
-                #     system('cls')
-                #     print("Saindo...")
-                #     break
-                # case _:
-                #     system('cls')
-                #     print("Opção inválida")          
+def crud_admin_edit(user):
+    system('cls')
+    while True:
+        try: 
+            print("EDITAR DADOS PESSOAIS\n")
+            print("1 - Atualizar o nome")
+            print("2 - Atualizar o e-mail")
+            print("3 - Atualizar a senha")
+            print("4 - Voltar ao menu anterior")
+            opc = int(input("Selecione a opção: "))
+            match opc:
+                case 1:
+                    edit_worker_name(user)
+                case 2:
+                    edit_worker_email(user)
+                case 3:
+                    edit_worker_password(user)
+                case 4:
+                    system('cls')
+                    admin_screen()
+                case _:
+                    system('cls')
+                    print("Opção inválida")          
         except ValueError:
             system('cls')
             print("Opção inválida")

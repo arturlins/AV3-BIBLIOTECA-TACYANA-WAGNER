@@ -1,6 +1,6 @@
 from os import system
 from services.admin_services import add_admin
-from screens.crud_admin import crud_admin_screen
+from screens.crud_admin import crud_admin_screen, crud_admin_edit
 import pwinput
 
 def admin_screen(user):
@@ -10,7 +10,9 @@ def admin_screen(user):
             print(f"TELA ADMIN\nBem-vindo {user[2]}\nEscolha uma opção: ")
             print("1 - Cadastrar um novo administrador")
             print("2 - Menu de opções: LIVROS")
-            print("4 - Sair")
+            print("3 - Menu de opções: RESERVAS E LOCAÇÕES")
+            print("4 - Editar dados pessoais")
+            print("5 - Sair")
             opc = int(input("Selecione a opção: "))
             match opc:
                 case 1:
@@ -23,14 +25,15 @@ def admin_screen(user):
                     crud_admin_screen(user)
                 # case 3:
                 #     add_new_book(user)
-                #case 4:
-
-                #     system('cls')
-                #     print("Saindo...")
-                #     break
-                # case _:
-                #     system('cls')
-                #     print("Opção inválida")          
+                case 4:
+                    crud_admin_edit(user)
+                case 5:
+                    system('cls')
+                    print("Saindo...")
+                    break
+                case _:
+                    system('cls')
+                    print("Opção inválida")          
         except ValueError:
             system('cls')
             print("Opção inválida")
