@@ -1,6 +1,6 @@
 from os import system
 from services.admin_services import list_books
-from services.students_services import rent_book, edit_student_data
+#from services.students_services import rent_book, edit_student_data
 
 def user_screen(user):
        while True:

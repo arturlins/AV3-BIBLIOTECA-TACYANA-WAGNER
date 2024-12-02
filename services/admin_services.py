@@ -2,7 +2,7 @@ from os import system
 import psycopg2.extras
 from config.db import start_connection
 from config.security import check_password, encrypt_password
-from utils.utils import get_book_id, get_author_id, get_category_id, get_publisher_id, list_books, list_books_authors_only, list_all_book_authors, list_books_simpler, list_book_publisher, list_book_category, get_title_by_id, get_quantity_by_id
+from utils.utils import get_book_id, get_author_id, get_category_id, get_publisher_id, list_books, list_books_authors_only, list_all_book_authors, list_books_simpler, list_book_publisher, list_book_category, get_title_by_id, get_quantity_by_id, get_author_by_id
 
 def add_admin(registration, name, email, password):
     try:
@@ -38,7 +38,6 @@ def add_book_author():
             print(f"Erro ao tentar adicionar o autor: {author_error}")
 
 def remove_book_author():
-    #max_id = list_all_book_authors()
     max_id = get_author_id() - 1
     while True:
         try:
@@ -318,6 +317,60 @@ def edit_books_titles():
             print("ID inexistente")
         except Exception as edit_book_error:
             print(f"Erro ao tentar editar o livro: {edit_book_error}")
+
+def edit_books_authors():
+    max_id = int(get_author_id() - 1)
+    system('cls')
+    list_all_book_authors()
+    while True:
+        try:
+            id_edit = int(input("Digite o ID do autor que você quer editar: "))
+            current_name = get_author_by_id(id_edit)
+            if id_edit < 0 or id_edit > max_id:
+                print("Valor inválido")
+            elif id_edit in range (1, max_id + 1):
+                new_name = input(f"Digite o novo título para '{current_name}': ")
+                conn = start_connection()
+                cursor = conn.cursor()
+                sql = "UPDATE biblioteca.autores SET nome_autor = %s WHERE autores.id_autor = %s"
+                cursor.execute(sql, [new_name, id_edit])
+                conn.commit()
+                conn.close()
+                print(f"Nome do autor editado com sucesso de '{current_name}' para '{new_name}'")
+                break
+            elif id_edit not in range (1, max_id + 1):
+                print("ID inexistente")
+        except (ValueError, AttributeError, TypeError):
+            print("ID inexistente")
+        except Exception as edit_author_error:
+            print(f"Erro ao tentar editar o livro: {edit_author_error}")
+
+def remove_author():
+    max_id = get_author_id()
+    system('cls')
+    list_all_book_authors()
+    while True:
+        try:
+            id_delete = int(input("Digite o ID do autor a ser excluído: "))
+            if id_delete < 0 or id_delete > max_id:
+                print("Valor inválido")
+            elif id_delete in range (1, max_id + 1):
+                conn = start_connection()
+                cursor = conn.cursor()
+                sql_fk = "DELETE FROM biblioteca.autores_do_livro WHERE autores_do_livro.id_autor = %s"
+                cursor.execute(sql_fk, [id_delete])
+                sql = "DELETE FROM biblioteca.autores WHERE id_autor = %s"
+                cursor.execute(sql, [id_delete])
+                conn.commit()
+                conn.close()
+                print("Autor removido com sucesso")
+                break
+            elif id_delete not in range (1, max_id + 1):
+                print("Valor inválido")
+        except ValueError:
+            print("Valor inválido")
+        except Exception as remove_author_error:
+            print(f"Erro ao tentar remover o livro: {remove_author_error}")
 
 def edit_books_quantities():
     max_id = int(get_book_id() - 1)

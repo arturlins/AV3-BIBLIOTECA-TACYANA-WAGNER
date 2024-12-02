@@ -14,7 +14,7 @@ def add_student():
         conn = start_connection()
         cursor = conn.cursor()
 
-        sql = "INSERT INTO biblioteca.alunos (matricula_aluno, nome_aluno, email_aluno, curso_aluno, reservas, emprestimos, senha_usuario) VALUES (%s, %s, %s, %s, 0, 0, %s)"        
+        sql = "INSERT INTO biblioteca.alunos (matricula_aluno, nome_aluno, email_aluno, curso_aluno, reservas, emprestimos, senha_aluno) VALUES (%s, %s, %s, %s, 0, 0, %s)"        
         cursor.execute(sql, (registration, name, email, course, hashed_password))
         conn.commit()
         

@@ -77,6 +77,19 @@ def get_quantity_by_id(id_edit):
         return quantity
     else:
         return 0
+    
+def get_author_by_id(id_edit):
+    conn = start_connection()
+    cursor = conn.cursor()
+    sql = "SELECT nome_autor FROM biblioteca.autores WHERE id_autor = %s"
+    cursor.execute(sql, [id_edit])
+    author = cursor.fetchone()[0]
+    cursor.close()
+    conn.close()
+    if author:
+        return author
+    else:
+        return 0
 
 # def get_books_ids_list():
 #     books_ids_list = []

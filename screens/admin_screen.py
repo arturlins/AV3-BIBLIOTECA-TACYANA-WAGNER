@@ -1,5 +1,5 @@
 from os import system
-from services.admin_services import add_admin, list_books, add_new_book
+from services.admin_services import add_admin
 from screens.crud_admin import crud_admin_screen
 import pwinput
 
@@ -21,8 +21,8 @@ def admin_screen(user):
                     add_admin(registration, name, email, password)
                 case 2:
                     crud_admin_screen(user)
-                case 3:
-                    add_new_book(user)
+                # case 3:
+                #     add_new_book(user)
                 #case 4:
 
                 #     system('cls')
