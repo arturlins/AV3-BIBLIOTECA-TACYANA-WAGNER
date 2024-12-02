@@ -1,14 +1,15 @@
 from os import system
-from services.admin_services import list_books
-#from services.students_services import rent_book, edit_student_data
+from utils.utils import list_books
+from services.students_services import book_reservation, cancel_book_reservation, edit_student_data
+#from screens.crud_student import 
 
 def user_screen(user):
        while True:
         try:            
             print(f"TELA USUÁRIO\nBem-vindo {user[2]}")
             print("1 - Listar livros do catálogo")
-            print("2 - Locar um livro")
-            print("3 - Devolver um livro")
+            print("2 - Reservar um livro")
+            print("3 - Cancelar uma reserva")
             print("4 - Editar dados pessoais")
             print("5 - Sair")
             opc = int(input("Selecione a opção: "))
@@ -16,16 +17,11 @@ def user_screen(user):
                 case 1:
                     list_books()
                 case 2:
-                    list_books()
+                    book_reservation()
                 case 3:
-                    system('cls')
-                    print("Saindo...")
-                    break
+                    cancel_book_reservation()
                 case 4:
-                    name = input("Digite o nome do  aluno: ")
-                    email = input("Digite o email do  aluno:")
-                    password = ("Digite a senha do aluno : ")
-                    edit_student_data(name, email, password)
+                    edit_student_data(user)
                 case 5:
                     system('cls')
                     print("Saindo...")

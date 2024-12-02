@@ -1,8 +1,10 @@
 from os import system
 from config.db import start_connection
 from services.admin_services import list_books
-from utils.utils import get_book_id
+from utils.utils import get_book_id, get_student_name_by_id, get_student_email_by_id
 from datetime import date, datetime, timedelta
+import pwinput
+from config.security import encrypt_password
 
 #def book_reservation(user):
 def book_reservation():
@@ -91,62 +93,90 @@ def cancel_book_reservation():
         except Exception as reservation_error:
             print(f"Erro ao cancelar a reserva: {reservation_error}")
 
-# def list_tasks(user_id):
-#     conn = start_connection()
-#     cursor = conn.cursor()
-#     sql = 'SELECT * FROM TASKS WHERE user_id = %s'
-#     cursor.execute(sql, [user_id])
-#     tasks = cursor.fetchall()
-#     return tasks
+#def edit_student_name(user):
+def edit_student_name():
+    system('cls')
+    while True:
+        try:
+            #id_edit = user[0]
+            id_edit = 1
+            current_name = get_student_name_by_id(id_edit)
+            new_name = input(f"Digite o novo nome para '{current_name}' (ou aperte enter para cancelar): ")
+            if new_name == '':
+                break
+            else:
+                conn = start_connection()
+                cursor = conn.cursor()
+                #sql = "UPDATE biblioteca.alunos SET nome_aluno = %s WHERE alunos.id_aluno = %s"
+                sql = "UPDATE biblioteca.alunos SET nome_aluno = %s WHERE alunos.id_aluno = 1"
+                cursor.execute(sql, [new_name])
+                #cursor.execute(sql, [new_name, id_edit])
+                conn.commit()
+                conn.close()
+                print(f"Nome do aluno atualizado com sucesso de '{current_name}' para '{new_name}'")
+                break
+        except (ValueError, AttributeError, TypeError):
+            print("Erro")
+        except Exception as edit_author_error:
+            print(f"Erro ao tentar editar o livro: {edit_author_error}")
 
+#def edit_student_email(user):
+def edit_student_email():
+    system('cls')
+    while True:
+        try:
+            #id_edit = user[0]
+            id_edit = 1
+            #current_email = get_student_by_id(user[0])
+            current_email = get_student_email_by_id(id_edit)
+            new_email = input(f"Digite o novo email para '{current_email}' (ou aperte enter para cancelar): ")
+            if new_email == '':
+                break
+            else:
+                conn = start_connection()
+                cursor = conn.cursor()
+                #sql = "UPDATE biblioteca.alunos SET email_aluno = %s WHERE alunos.id_aluno = %s"
+                sql = "UPDATE biblioteca.alunos SET email_aluno = %s WHERE alunos.id_aluno = 1"
+                cursor.execute(sql, [new_email])
+                #cursor.execute(sql, [new_email, id_edit])
+                conn.commit()
+                conn.close()
+                print(f"E-mail do aluno atualizado com sucesso de '{current_email}' para '{new_email}'")
+                break
+        except (ValueError, AttributeError, TypeError):
+            print("Erro")
+        except Exception as edit_author_error:
+            print(f"Erro ao tentar editar o livro: {edit_author_error}")
 
+#def edit_student_password(user):
+def edit_student_password():
+    system('cls')
+    while True:
+        try:
+            #id_edit = user[0]
+            id_edit = 1
+            #current_password = get_student_by_id(user[0])
+            #current_password = get_student_password_by_id(id_edit)
+            new_password = pwinput.pwinput(f"Digite a nova senha ou aperte enter para cancelar: ")
+            if new_password == '':
+                break
+            else:
+                hashed_password = encrypt_password(new_password)
+                conn = start_connection()
+                cursor = conn.cursor()
+                #sql = "UPDATE biblioteca.alunos SET senha_aluno = %s WHERE alunos.id_aluno = %s"
+                sql = "UPDATE biblioteca.alunos SET senha_aluno = %s WHERE alunos.id_aluno = 1"
+                cursor.execute(sql, [hashed_password])
+                #cursor.execute(sql, [hashed_password, id_edit])
+                conn.commit()
+                conn.close()
+                print(f"Senha atualizada com sucesso")
+                break
+        except (ValueError, AttributeError, TypeError):
+            print("Erro")
+        except Exception as edit_password_error:
+            print(f"Erro ao tentar editar o livro: {edit_password_error}")
 
-# def rent_book():
-#     max_id = list_books()
-#     while True:
-#         try:
-#             option = int(input("Digite o ID do livro a ser locado"))
-#             if option < 0 or option > max_id:
-#                 print("Valor inválido")
-#             elif option in (1, max_id + 1):
-#                 conn = start_connection()
-#                 cursor = conn.cursor()
-#                 sql = ''
-#             elif option not in (1, max_id + 1):
-#                 print("Valor inválido")
-#         except ValueError:
-#             print("Valor inválido")
-#         except Exception as rent_error:
-#             print(f"Erro ao locar livro: {rent_error}")
-
-# def edit_student_data(name, email, password):
-#     while True:
-#         try:
-#             print('teste')
-#         except ValueError:
-#             print("Valor inválido")
-
-# def edit_student_data():
-#     while True:
-#         try:
-#             conn = start_connection()
-#             cursor = conn.cursor()
-#             registration = input("Matrícula do aluno: ")
-#             cursor.execute("SELECT * FROM alunos WHERE matricula_aluno = %s", (registration,))
-#             student = cursor.fetchone()
-#             if student:
-#                 name = input("Novo nome (Enter para manter): ") or student[1]
-#                 email = input("Novo e-mail (Enter para manter): ") or student[2]
-#                 course = input("Novo curso (Enter para manter): ") or student[3]
-#                 cursor.execute(
-#                     "UPDATE alunos SET nome_aluno = %s, email_aluno = %s, curso_aluno = %s WHERE matricula_aluno = %s",
-#                     (name, email, course, registration)
-#                 conn.commit()
-#                 print("Aluno atualizado.")
-#             else:
-#                 print("Aluno não encontrado.")
-#         except ValueError:
-#             print("Valor inválido")
 
 # def create_task(user_id, title):
 #     conn = start_connection()
@@ -172,6 +202,13 @@ def cancel_book_reservation():
 #     conn.commit()
 #     # return cursor.rowcount
 
+# def list_tasks(user_id):
+#     conn = start_connection()
+#     cursor = conn.cursor()
+#     sql = 'SELECT * FROM TASKS WHERE user_id = %s'
+#     cursor.execute(sql, [user_id])
+#     tasks = cursor.fetchall()
+#     return tasks
 
 # def update_task(user_id, task_id, title):
 #     conn = start_connection()

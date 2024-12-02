@@ -90,6 +90,45 @@ def get_author_by_id(id_edit):
         return author
     else:
         return 0
+    
+def get_student_name_by_id(id_edit):
+    conn = start_connection()
+    cursor = conn.cursor()
+    sql = "SELECT nome_aluno FROM biblioteca.alunos WHERE id_aluno = %s"
+    cursor.execute(sql, [id_edit])
+    student = cursor.fetchone()[0]
+    cursor.close()
+    conn.close()
+    if student:
+        return student
+    else:
+        return 0
+    
+def get_student_email_by_id(id_edit):
+    conn = start_connection()
+    cursor = conn.cursor()
+    sql = "SELECT email_aluno FROM biblioteca.alunos WHERE id_aluno = %s"
+    cursor.execute(sql, [id_edit])
+    student = cursor.fetchone()[0]
+    cursor.close()
+    conn.close()
+    if student:
+        return student
+    else:
+        return 0
+    
+# def get_student_password_by_id(id_edit):
+#     conn = start_connection()
+#     cursor = conn.cursor()
+#     sql = "SELECT senha_aluno FROM biblioteca.alunos WHERE id_aluno = %s"
+#     cursor.execute(sql, [id_edit])
+#     student = cursor.fetchone()[0]
+#     cursor.close()
+#     conn.close()
+#     if student:
+#         return student
+#     else:
+#         return 0
 
 # def get_books_ids_list():
 #     books_ids_list = []
