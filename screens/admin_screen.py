@@ -1,15 +1,15 @@
 from os import system
 from services.admin_services import add_admin, list_books, add_new_book
+from screens.crud_admin import crud_admin_screen
 import pwinput
 
 def admin_screen(user):
     system('cls')
     while True:
         try:            
-            print(f"TELA ADMIN\nBem-vindo {user[2]}")
+            print(f"TELA ADMIN\nBem-vindo {user[2]}\nEscolha uma opção: ")
             print("1 - Cadastrar um novo administrador")
-            print("2 - Listar livros cadastrados")
-            print("3 - Adicionar um novo livro ao catálogo")
+            print("2 - Menu de opções: LIVROS")
             print("4 - Sair")
             opc = int(input("Selecione a opção: "))
             match opc:
@@ -20,16 +20,17 @@ def admin_screen(user):
                     password = pwinput.pwinput("Digite a senha do administrador: ")
                     add_admin(registration, name, email, password)
                 case 2:
-                    list_books()
+                    crud_admin_screen(user)
                 case 3:
                     add_new_book(user)
-                case 4:
-                    system('cls')
-                    print("Saindo...")
-                    break
-                case _:
-                    system('cls')
-                    print("Opção inválida")          
+                #case 4:
+
+                #     system('cls')
+                #     print("Saindo...")
+                #     break
+                # case _:
+                #     system('cls')
+                #     print("Opção inválida")          
         except ValueError:
             system('cls')
             print("Opção inválida")
