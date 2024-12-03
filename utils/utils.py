@@ -142,6 +142,19 @@ def get_worker_email_by_id(id_edit):
         return worker
     else:
         return 0
+    
+def get_publisher_name_by_id(id_edit):
+    conn = start_connection()
+    cursor = conn.cursor()
+    sql = "SELECT nome_editora FROM biblioteca.editoras WHERE id_editora = %s"
+    cursor.execute(sql, [id_edit])
+    publisher = cursor.fetchone()[0]
+    cursor.close()
+    conn.close()
+    if publisher:
+        return publisher
+    else:
+        return 0
 
 def list_all_book_authors():
     conn = start_connection()

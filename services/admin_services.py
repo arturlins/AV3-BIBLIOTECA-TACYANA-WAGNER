@@ -1,7 +1,7 @@
 from os import system
 from config.db import start_connection
 from config.security import encrypt_password
-from utils.utils import get_book_id, get_author_id, get_category_id, get_publisher_id, list_books, list_all_book_authors, list_books_simpler, list_book_publisher, list_book_category, get_title_by_id, get_quantity_by_id, get_author_by_id, get_worker_name_by_id, get_worker_email_by_id
+from utils.utils import get_book_id, get_author_id, get_category_id, get_publisher_id, list_books, list_all_book_authors, list_books_simpler, list_book_publisher, list_book_category, get_title_by_id, get_quantity_by_id, get_author_by_id, get_worker_name_by_id, get_worker_email_by_id, get_publisher_name_by_id
 import pwinput
 from datetime import date, timedelta
 
@@ -323,7 +323,7 @@ def edit_books_authors():
             print(f"Erro ao tentar editar o livro: {edit_author_error}")
 
 def remove_author():
-    max_id = get_author_id()
+    max_id = get_author_id() - 1
     system('cls')
     list_all_book_authors()
     while True:
@@ -521,6 +521,59 @@ def add_publisher():
         system('cls')
         print("Editora adicionada com sucesso")
 
+def edit_publishers():
+    system('cls')
+    max_id = get_publisher_id() - 1
+    list_book_publisher()
+    while True:
+        try:
+            id_edit = int(input("Digite o ID da editora que você quer editar: "))
+            current_name = get_publisher_name_by_id(id_edit)
+            if id_edit < 0 or id_edit > max_id:
+                print("Valor inválido")
+            elif id_edit in range (1, max_id + 1):
+                new_name = input(f"Digite o novo título para '{current_name}': ")
+                conn = start_connection()
+                cursor = conn.cursor()
+                sql = "UPDATE biblioteca.editoras SET nome_editora = %s WHERE editoras.id_editora = %s"
+                cursor.execute(sql, [new_name, id_edit])
+                conn.commit()
+                conn.close()
+                print(f"Nome da editora editado com sucesso de '{current_name}' para '{new_name}'")
+                break
+            elif id_edit not in range (1, max_id + 1):
+                print("ID inexistente")
+        except (ValueError, AttributeError, TypeError):
+            print("ID inexistente")
+        except Exception as edit_author_error:
+            print(f"Erro ao tentar editar a editora: {edit_author_error}")
+
+def remove_publisher():
+    max_id = get_publisher_id()
+    system('cls')
+    list_book_publisher()
+    while True:
+        try:
+            id_delete = int(input("Digite o ID do da editora a ser excluída (OBS.: TODOS os livros registrados com a respectiva editora também serão deletados): "))
+            if id_delete < 0 or id_delete > max_id:
+                print("Valor inválido")
+            elif id_delete in range (1, max_id + 1):
+                conn = start_connection()
+                cursor = conn.cursor()
+                sql_books = "DELETE FROM biblioteca.livros WHERE id_livro IN (SELECT id_livro FROM biblioteca.livros WHERE id_editora = %s)"
+                cursor.execute(sql_books, [id_delete])
+                sql = "DELETE FROM biblioteca.editoras WHERE id_editora = %s"
+                cursor.execute(sql, [id_delete])
+                conn.commit()
+                conn.close()
+                print("Editora removida com sucesso")
+                break
+            elif id_delete not in range (1, max_id + 1):
+                print("Valor inválido")
+        except ValueError:
+            print("Valor inválido")
+        except Exception as remove_publisher_error:
+            print(f"Erro ao tentar remover a editora: {remove_publisher_error}")
 
 # def create_task(user_id, title):
 #     conn = criar_conexao()
