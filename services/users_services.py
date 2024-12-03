@@ -6,9 +6,13 @@ import pwinput
 def add_student():
     try:
         registration = input("Digite a matrícula do aluno: ")
+        system('cls')
         name = input("Digite o nome do aluno: ")
+        system('cls')
         email = input("Digite o e-mail do aluno: ")
+        system('cls')
         course = input("Digite o curso do aluno: ")
+        system('cls')
         password = pwinput.pwinput("Digite a senha do aluno: ")
         hashed_password = encrypt_password(password)
         conn = start_connection()
@@ -62,21 +66,3 @@ def login_worker(email, password):
         if check_password(password, hash_password):
             return result
     return False
-
-# def privilege_check(email):
-#     try:
-#         conn = start_connection()
-#         cursor = conn.cursor()
-#         sql = "SELECT * FROM usuarios WHERE email_usuario = %s"
-#         cursor.execute(sql, (email,))
-#         result = cursor.fetchone()
-#         admin_privilege = result[6]
-#     except Exception as privilege_error:
-#         print(f"Erro ao identificar o privilégio do usuário: {privilege_error}")
-#         return False
-#     finally:
-#         conn.close()
-#     if admin_privilege == True:
-#         return True
-#     elif admin_privilege == False:
-#         return False

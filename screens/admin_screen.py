@@ -1,5 +1,5 @@
 from os import system
-from services.admin_services import add_admin, list_books, add_new_book, remove_book, edit_books_titles, edit_books_quantities, add_book_author, remove_book_author, edit_books_authors, edit_worker_name, edit_worker_email, edit_worker_password
+from services.admin_services import add_admin, list_books, add_new_book, remove_book, edit_books_titles, edit_books_quantities, add_book_author, remove_author, edit_books_authors, edit_worker_name, edit_worker_email, edit_worker_password, add_publisher
 from utils.utils import list_books, list_all_book_authors, list_book_publisher
 import pwinput
 
@@ -16,9 +16,13 @@ def admin_screen(user):
             opc = int(input("Selecione a opção: "))
             match opc:
                 case 1:
+                    system('cls')
                     registration = input("Digite a matrícula do administrador: ")
+                    system('cls')
                     name = input("Digite o nome do administrador: ")
+                    system('cls')
                     email = input("Digite o email do administrador: ")
+                    system('cls')
                     password = pwinput.pwinput("Digite a senha do administrador: ")
                     add_admin(registration, name, email, password)
                 case 2:
@@ -55,35 +59,47 @@ def crud_admin_screen(user):
             print("9 - editar um autor do cadastrado")
             print("\nAÇÕES - EDITORAS")
             print("10 - Listar editoras cadastradas")
-            print("11 - Voltar ao menu anterior")
-            # print("11 - Adicionar uma editora ao cadastro")
+            print("11 - Adicionar uma editora ao cadastro")
             # print("12 - Remover uma editora do cadastrado")
             # print("13 - Editar uma editora do cadastrado")
             # print("\nAÇÕES - CATEGORIAS DE LIVROS")
             # print("14 - Remover uma editora do cadastrado")
+            print("20 - Voltar ao menu anterior")
             opc = int(input("Selecione a opção: "))
             match opc:
                 case 1:
+                    system('cls')
                     list_books()
                 case 2:
+                    system('cls')
                     add_new_book(user)
                 case 3:
+                    system('cls')
                     remove_book()
                 case 4:
+                    system('cls')
                     edit_books_titles()
                 case 5:
+                    system('cls')
                     edit_books_quantities()
                 case 6:
+                    system('cls')
                     list_all_book_authors()
                 case 7:
+                    system('cls')
                     add_book_author()
                 case 8:
-                    remove_book_author()
+                    system('cls')
+                    remove_author()
                 case 9:
+                    system('cls')
                     edit_books_authors()
                 case 10:
+                    system('cls')
                     list_book_publisher()
                 case 11:
+                    add_publisher()
+                case 20:
                     system('cls')
                     admin_screen()
                 case _:

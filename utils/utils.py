@@ -143,31 +143,6 @@ def get_worker_email_by_id(id_edit):
     else:
         return 0
 
-# def get_student_password_by_id(id_edit):
-#     conn = start_connection()
-#     cursor = conn.cursor()
-#     sql = "SELECT senha_aluno FROM biblioteca.alunos WHERE id_aluno = %s"
-#     cursor.execute(sql, [id_edit])
-#     student = cursor.fetchone()[0]
-#     cursor.close()
-#     conn.close()
-#     if student:
-#         return student
-#     else:
-#         return 0
-
-# def get_books_ids_list():
-#     books_ids_list = []
-#     conn = start_connection()
-#     cursor = conn.cursor()
-#     sql = "SELECT * FROM biblioteca.livros"
-#     cursor.execute(sql)
-#     result = cursor.fetchall()
-#     for id_livro, _, _, _, _, _, _, _, _, _, _ in result:
-#         books_ids_list.append(id_livro)
-#     conn.close()
-#     return books_ids_list
-
 def list_all_book_authors():
     conn = start_connection()
     cursor = conn.cursor()

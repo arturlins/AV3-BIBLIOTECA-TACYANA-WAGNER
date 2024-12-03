@@ -1,5 +1,4 @@
 from os import system
-import psycopg2.extras
 from config.db import start_connection
 from config.security import encrypt_password
 from utils.utils import get_book_id, get_author_id, get_category_id, get_publisher_id, list_books, list_all_book_authors, list_books_simpler, list_book_publisher, list_book_category, get_title_by_id, get_quantity_by_id, get_author_by_id, get_worker_name_by_id, get_worker_email_by_id
@@ -38,31 +37,6 @@ def add_book_author():
             print("Valor inválido")
         except Exception as author_error:
             print(f"Erro ao tentar adicionar o autor: {author_error}")
-
-def remove_book_author():
-    max_id = get_author_id() - 1
-    while True:
-        try:
-            id_delete = int(input("Digite o ID do autor que você quer remover ou digite 0 para cancelar: "))
-            if id_delete < 0 or id_delete > max_id:
-                print("Valor inválido")
-            elif id_delete == 0:
-                break
-            elif id_delete in range (1, max_id + 1):
-                conn = start_connection()
-                cursor = conn.cursor()
-                sql = "DELETE FROM biblioteca.autores WHERE id_autor = %s"
-                cursor.execute(sql, [id_delete])
-                conn.commit()
-                conn.close()
-                print("Autor removido com sucesso")
-                break
-            elif id_delete not in range (1, max_id + 1):
-                print("Valor inválido")
-        except ValueError:
-            print("Valor inválido")
-        except Exception as remove_author_error:
-            print(f"Erro ao tentar remover o autor: {remove_author_error}")
 
 def add_new_category():
     while True:
@@ -242,8 +216,9 @@ def add_new_book(user):
                 conn = start_connection()
                 cursor = conn.cursor()
                 #sql = "INSERT INTO biblioteca.livros(titulo_livro, id_editora, isbn_livro, ano_livro, idioma_livro, id_categoria, quantidade_catalogo, id_funcionario, quantidade_reservado, quantidade_locado) VALUES (%s, %s, %s, %s, %s, %s, %s, 1, 0, 0)"
+                #sql = "INSERT INTO biblioteca.livros(titulo_livro, id_editora, isbn_livro, ano_livro, idioma_livro, id_categoria, quantidade_catalogo, id_funcionario, quantidade_reservado, quantidade_locado) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 0, 0)"
                 sql = "INSERT INTO biblioteca.livros(titulo_livro, id_editora, isbn_livro, ano_livro, idioma_livro, id_categoria, quantidade_catalogo, id_funcionario, quantidade_reservado, quantidade_locado) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 0, 0)"
-                cursor.execute(sql, [id_author, book_title, id_publisher, book_isbn, book_year, book_language, id_category, book_quantity, user[0]])
+                cursor.execute(sql, [book_title, id_publisher, book_isbn, book_year, book_language, id_category, book_quantity, user[0]])
                 #cursor.execute(sql, [book_title, id_publisher, book_isbn, book_year, book_language, id_category, book_quantity])
                 conn.commit()
                 conn.close()
@@ -353,7 +328,7 @@ def remove_author():
     list_all_book_authors()
     while True:
         try:
-            id_delete = int(input("Digite o ID do autor a ser excluído: "))
+            id_delete = int(input("Digite o ID do autor a ser excluído (OBS.: TODOS os livros registrados com o respectivo autor também serão deletados): "))
             if id_delete < 0 or id_delete > max_id:
                 print("Valor inválido")
             elif id_delete in range (1, max_id + 1):
@@ -361,6 +336,8 @@ def remove_author():
                 cursor = conn.cursor()
                 sql_fk = "DELETE FROM biblioteca.autores_do_livro WHERE autores_do_livro.id_autor = %s"
                 cursor.execute(sql_fk, [id_delete])
+                sql_books = "DELETE FROM biblioteca.livros WHERE id_livro IN (SELECT id_livro FROM biblioteca.autores_do_livro WHERE id_autor = %s)"
+                cursor.execute(sql_books, [id_delete])
                 sql = "DELETE FROM biblioteca.autores WHERE id_autor = %s"
                 cursor.execute(sql, [id_delete])
                 conn.commit()
@@ -528,7 +505,21 @@ def book_rent(user):
         except Exception as reservation_error:
             print(f"Erro ao realizar login: {reservation_error}")
 
-
+def add_publisher():
+    publisher_name = input("Digite o nome da editora: ")
+    if publisher_name == '':
+        print("É obrigatório informar o nome da editora")
+    else:
+        system('cls')
+        publisher_location = input("Digite o local da editora (ou aperte enter para deixar em branco): ")
+        conn = start_connection()
+        cursor = conn.cursor()
+        sql = "INSERT INTO biblioteca.editoras(nome_editora, local_editora) VALUES (%s, %s)"
+        cursor.execute(sql, [publisher_name, publisher_location])
+        conn.commit()
+        conn.close()
+        system('cls')
+        print("Editora adicionada com sucesso")
 
 
 # def create_task(user_id, title):

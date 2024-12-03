@@ -14,6 +14,7 @@ while True:
         opc = int(input("Selecione a opção: "))
         match opc:
             case 1:
+                system('cls')
                 add_student()
             case 2:
                 email = input("Digite o email: ")
