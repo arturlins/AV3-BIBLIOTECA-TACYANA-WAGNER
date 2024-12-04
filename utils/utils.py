@@ -306,6 +306,22 @@ def list_rented_books():
         print(f"\n-----------------------------------------------------------------------------------------------------------\n")
     conn.close()
 
+def list_all_reserved_books():
+    conn = start_connection()
+    cursor = conn.cursor()
+    sql = "SELECT id_reserva, titulo_livro, data_reserva, prazo_reserva, nome_aluno, reservas.id_aluno FROM biblioteca.reservas JOIN biblioteca.livros ON reservas.id_livro = livros.id_livro JOIN biblioteca.alunos ON reservas.id_aluno  = alunos.id_aluno"
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    for id_reserva, titulo_livro, data_reserva, prazo_reserva, nome_aluno, id_aluno in result:
+        print(f"ID da reserva: {id_reserva}")
+        print(f"Título do livro: {titulo_livro}")
+        print(f"Data da reserva: {data_reserva}")
+        print(f"Prazo em que a reserva estará disponível: {prazo_reserva}")
+        print(f"Aluno que solicitou a reserva: {nome_aluno}")
+        print(f"ID do aluno que solicitou a reserva: {id_aluno}")
+        print("-------------------------------------------------------------------------------------------------------------\n")
+    conn.close()
+
 def apply_fines():
     try:
         conn = start_connection()

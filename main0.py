@@ -1,8 +1,8 @@
 from datetime import date
 from services.admin_services import list_books, list_book_category, add_new_book, list_all_book_authors, list_book_publisher, remove_book, edit_books_titles, edit_books_quantities, edit_books_authors, remove_author, edit_worker_name, edit_worker_email, edit_worker_password, book_return
-from services.students_services import book_reservation, list_user_reservations, cancel_book_reservation, edit_student_name, edit_student_email, edit_student_password
+from services.students_services import book_reservation, list_user_reservations, cancel_book_reservation, edit_student_name, edit_student_email, edit_student_password, list_user_rentings
 from services.users_services import login_worker
-from utils.utils import get_book_id, list_books, list_books_authors_only, list_books_simpler, get_publisher_id, get_category_id, get_author_id, list_students, get_reservation_id_by_ids, list_rented_books, check_if_exist_book_fine
+from utils.utils import get_book_id, list_books, list_books_authors_only, list_books_simpler, get_publisher_id, get_category_id, get_author_id, list_students, get_reservation_id_by_ids, list_rented_books, check_if_exist_book_fine, list_all_reserved_books
 from services.searching_services import book_search, student_search
 
 #list_books()
@@ -45,4 +45,6 @@ from services.searching_services import book_search, student_search
 #print(get_reservation_id_by_ids(1,3))
 #list_rented_books()
 #print(check_if_exist_book_fine(2))
-book_return()
+#book_return()
+#list_all_reserved_books()
+list_user_rentings(1)

@@ -93,6 +93,20 @@ def cancel_book_reservation(user):
         except Exception as reservation_error:
             print(f"Erro ao cancelar a reserva: {reservation_error}")
 
+def list_user_rentings(user):
+    conn = start_connection()
+    cursor = conn.cursor()
+    sql = "SELECT id_locacao, titulo_livro, data_emprestimo, prazo_emprestimo_devolucao FROM biblioteca.locacoes JOIN biblioteca.livros ON locacoes.id_livro = livros.id_livro WHERE id_aluno = %s AND status_devolucao = FALSE"
+    cursor.execute(sql, (user[0],))
+    result = cursor.fetchall()
+    for id_locacao, titulo_livro, data_emprestimo, prazo_emprestimo_devolucao in result:
+        print(f"ID da reserva: {id_locacao}")
+        print(f"Título do livro: {titulo_livro}")
+        print(f"Data da reserva: {data_emprestimo}")
+        print(f"Prazo em que a reserva estará disponível: {prazo_emprestimo_devolucao}")
+        print("-------------------------------------------------------------------------------------------------------------\n")
+    conn.close() 
+
 def edit_student_name(user):
 #def edit_student_name():
     system('cls')

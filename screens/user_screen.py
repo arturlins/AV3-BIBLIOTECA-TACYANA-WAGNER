@@ -1,6 +1,6 @@
 from os import system
 from utils.utils import list_books
-from services.students_services import book_reservation, cancel_book_reservation, edit_student_name, edit_student_email, edit_student_password, list_user_reservations
+from services.students_services import book_reservation, cancel_book_reservation, edit_student_name, edit_student_email, edit_student_password, list_user_reservations, list_user_rentings
 from services.searching_services import book_search
 
 def user_screen(user):
@@ -31,8 +31,8 @@ def user_screen(user):
                     list_user_reservations(user)
                 case 5:
                     cancel_book_reservation(user)
-                # case 6:
-                #     list_user_rentings(user)
+                case 6:
+                    list_user_rentings(user)
                 case 7:
                     crud_student_personal_data(user)
                 case 8:

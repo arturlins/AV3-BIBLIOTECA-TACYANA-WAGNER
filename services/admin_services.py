@@ -4,7 +4,7 @@ from config.security import encrypt_password
 from utils.utils import get_book_id, get_author_id, get_category_id, get_publisher_id, list_books, list_all_book_authors, list_books_simpler, list_book_publisher, list_book_category, get_title_by_id, get_quantity_by_id, get_author_by_id, get_worker_name_by_id, get_worker_email_by_id, get_publisher_name_by_id, get_category_name_by_id, list_students, get_reservation_id_by_ids, list_rented_books, check_if_exist_book_fine
 import pwinput
 from datetime import date, timedelta
-from screens.admin_screen import crud_admin_rentings
+#from screens.admin_screen import crud_admin_rentings
 
 def add_admin(registration, name, email, password):
     try:
@@ -511,7 +511,6 @@ def book_return(user):
     list_books = list_rented_books()
     if list_books is None:
         print("Não existem livros locados a serem devolvidos")
-        crud_admin_rentings(user)
     else:
         return_id = int(input("Digite o ID da locação a ser devolvida: "))
     fine_checher = check_if_exist_book_fine(return_id)
