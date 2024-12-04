@@ -155,6 +155,19 @@ def get_publisher_name_by_id(id_edit):
         return publisher
     else:
         return 0
+    
+def get_category_name_by_id(id_edit):
+    conn = start_connection()
+    cursor = conn.cursor()
+    sql = "SELECT nome_categoria FROM biblioteca.categorias WHERE id_categoria = %s"
+    cursor.execute(sql, [id_edit])
+    category = cursor.fetchone()[0]
+    cursor.close()
+    conn.close()
+    if category:
+        return category
+    else:
+        return 0
 
 def list_all_book_authors():
     conn = start_connection()
@@ -266,4 +279,4 @@ class color:
 #         if len(user_input) <= max_length:
 #             return user_input
 #         else:
-#             print(f"Input exceeds {max_length} characters. Please try again.")
+#             print(f"Há um limite de {max_length} caracteres.")

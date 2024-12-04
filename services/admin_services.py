@@ -1,7 +1,7 @@
 from os import system
 from config.db import start_connection
 from config.security import encrypt_password
-from utils.utils import get_book_id, get_author_id, get_category_id, get_publisher_id, list_books, list_all_book_authors, list_books_simpler, list_book_publisher, list_book_category, get_title_by_id, get_quantity_by_id, get_author_by_id, get_worker_name_by_id, get_worker_email_by_id, get_publisher_name_by_id
+from utils.utils import get_book_id, get_author_id, get_category_id, get_publisher_id, list_books, list_all_book_authors, list_books_simpler, list_book_publisher, list_book_category, get_title_by_id, get_quantity_by_id, get_author_by_id, get_worker_name_by_id, get_worker_email_by_id, get_publisher_name_by_id, get_category_name_by_id
 import pwinput
 from datetime import date, timedelta
 
@@ -545,8 +545,8 @@ def edit_publishers():
                 print("ID inexistente")
         except (ValueError, AttributeError, TypeError):
             print("ID inexistente")
-        except Exception as edit_author_error:
-            print(f"Erro ao tentar editar a editora: {edit_author_error}")
+        except Exception as edit_publisher_error:
+            print(f"Erro ao tentar editar a editora: {edit_publisher_error}")
 
 def remove_publisher():
     max_id = get_publisher_id()
@@ -574,6 +574,62 @@ def remove_publisher():
             print("Valor inválido")
         except Exception as remove_publisher_error:
             print(f"Erro ao tentar remover a editora: {remove_publisher_error}")
+
+def remove_category():
+    max_id = get_category_id() - 1
+    system('cls')
+    list_book_category()
+    while True:
+        try:
+            id_delete = int(input("Digite o ID da categoria a ser excluída, ou digite '0' para cancelar (OBS.: TODOS os livros registrados com a respectiva categoria também serão excluídos): "))
+            if id_delete == 0:
+                break
+            elif id_delete < 0 or id_delete > max_id:
+                print("Valor inválido")
+            elif id_delete in range (1, max_id + 1):
+                conn = start_connection()
+                cursor = conn.cursor()
+                sql_books = "DELETE FROM biblioteca.livros WHERE id_livro IN (SELECT id_livro FROM biblioteca.livros WHERE id_categoria = %s)"
+                cursor.execute(sql_books, [id_delete])
+                sql = "DELETE FROM biblioteca.categorias WHERE id_categoria = %s"
+                cursor.execute(sql, [id_delete])
+                conn.commit()
+                conn.close()
+                print("Categoria removida com sucesso")
+                break
+            elif id_delete not in range (1, max_id + 1):
+                print("Valor inválido")
+        except ValueError:
+            print("Valor inválido")
+        except Exception as remove_category_error:
+            print(f"Erro ao tentar remover a categoria: {remove_category_error}")
+
+def edit_category():
+    system('cls')
+    max_id = get_category_id() - 1
+    list_book_category()
+    while True:
+        try:
+            id_edit = int(input("Digite o ID da categoria que você quer editar: "))
+            current_name = get_category_name_by_id(id_edit)
+            if id_edit < 0 or id_edit > max_id:
+                print("Valor inválido")
+            elif id_edit in range (1, max_id + 1):
+                new_name = input(f"Digite o novo nome para '{current_name}': ")
+                conn = start_connection()
+                cursor = conn.cursor()
+                sql = "UPDATE biblioteca.categorias SET nome_categoria = %s WHERE categorias.id_categoria = %s"
+                cursor.execute(sql, [new_name, id_edit])
+                conn.commit()
+                conn.close()
+                print(f"Nome da categoria editado com sucesso de '{current_name}' para '{new_name}'")
+                break
+            elif id_edit not in range (1, max_id + 1):
+                print("ID inexistente")
+        except (ValueError, AttributeError, TypeError):
+            print("ID inexistente")
+        except Exception as edit_category_error:
+            print(f"Erro ao tentar editar a categoria: {edit_category_error}")
 
 # def create_task(user_id, title):
 #     conn = criar_conexao()

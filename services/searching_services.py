@@ -5,7 +5,7 @@ def book_search():
     system('cls')
     conn = start_connection()
     cursor = conn.cursor()
-    search = input("Digite a palavra que você quer pesquisar: ")
+    search = input("Digite a palavra/frase que você quer pesquisar: ")
     sql = f"SELECT titulo_livro, nome_autor, nome_editora FROM biblioteca.livros JOIN biblioteca.autores_do_livro ON livros.id_livro = autores_do_livro.id_livro JOIN biblioteca.autores ON autores_do_livro.id_autor = autores.id_autor JOIN biblioteca.editoras ON livros.id_editora = editoras.id_editora WHERE titulo_livro ILIKE '%{search}%' OR nome_autor ILIKE '%{search}%' OR nome_editora ILIKE '%{search}%' ORDER BY livros.titulo_livro"
     cursor.execute(sql)
     result = cursor.fetchall()
