@@ -2,7 +2,10 @@ from os import system
 from services.users_services import add_student, login_student, login_worker
 from screens.admin_screen import admin_screen
 from screens.user_screen import user_screen
+from utils.utils import apply_fines
 import pwinput
+
+apply_fines()
 
 while True:
     try:            

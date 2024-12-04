@@ -1,9 +1,10 @@
 from os import system
 from config.db import start_connection
 from config.security import encrypt_password
-from utils.utils import get_book_id, get_author_id, get_category_id, get_publisher_id, list_books, list_all_book_authors, list_books_simpler, list_book_publisher, list_book_category, get_title_by_id, get_quantity_by_id, get_author_by_id, get_worker_name_by_id, get_worker_email_by_id, get_publisher_name_by_id, get_category_name_by_id, list_students, get_reservation_id_by_ids
+from utils.utils import get_book_id, get_author_id, get_category_id, get_publisher_id, list_books, list_all_book_authors, list_books_simpler, list_book_publisher, list_book_category, get_title_by_id, get_quantity_by_id, get_author_by_id, get_worker_name_by_id, get_worker_email_by_id, get_publisher_name_by_id, get_category_name_by_id, list_students, get_reservation_id_by_ids, list_rented_books, check_if_exist_book_fine
 import pwinput
 from datetime import date, timedelta
+from screens.admin_screen import crud_admin_rentings
 
 def add_admin(registration, name, email, password):
     try:
@@ -459,93 +460,29 @@ def edit_worker_password(user):
         except Exception as edit_password_error:
             print(f"Erro ao tentar editar o livro: {edit_password_error}")
 
-# def book_rent(user):
-#     system('cls')
-#     list_students()
-#     student_id = int(input("Digite o ID do aluno que fará o empréstimo do livro: "))
-#     list_books_simpler()
-#     book_id = int(input("Digite o ID do livro a ser locado: "))
-#     while True:
-#         try:           
-#             conn = start_connection()
-#             cursor = conn.cursor()
-#             sql = "SELECT id_reserva, id_livro, id_aluno FROM biblioteca.reservas WHERE id_aluno = %s AND id_livro = %s"
-#             cursor.execute(sql, (student_id, book_id,))
-#             result = cursor.fetchone()
-#             if result is not None:
-#                 sql_remove_reservation = "DELETE FROM biblioteca.reservas WHERE id_aluno = %s AND id_livro = %s"
-#                 cursor.execute(sql_remove_reservation, (student_id, book_id,))
-#                 conn.commit()
-#                 continue
-#             sql_check = "SELECT id_livro FROM biblioteca.locacoes WHERE id_aluno = %s"
-#             cursor.execute(sql_check, (book_id,))
-#             result_check = cursor.fetchone()
-#             list_rentings = []
-#             sql_check2 = "SELECT quantidade_catalogo, quantidade_reservado, quantidade_locado FROM biblioteca.livros WHERE id_livro = %s"
-#             cursor.execute(sql_check2, (book_id,))
-#             result_check2 = cursor.fetchone()
-#             for _, id_livro, _, _, _ in result_check:
-#                 list_rentings.append(id_livro)
-#             if book_id in list_rentings:
-#                 print("Você já está com esse livro locado")
-#             elif result_check2[1] + result_check2[2] >= result_check2[0]:
-#                 print("Livro indisponível para locação")
-#             else:
-#                 print("Livro disponível para locação")
-#                 date_renting = date.today()
-#                 deadline_renting = date_renting + timedelta(days=7)
-#                 date_return = None
-#                 sql_rent = "INSERT INTO biblioteca.locacoes(id_livro, id_aluno, id_funcionario, data_emprestimo, prazo_emprestimo_devolucao, data_devolucao, status_devolucao, valor_multa) VALUES (%s, %s, %s, %s, %s, %s, FALSE, 0) RETURNING id_locacao"
-#                 cursor.execute(sql_rent, (book_id, student_id, user[0], date_renting, deadline_renting, date_return))
-#                 renting_id = cursor.fetchone()[0]
-#                 sql2 = "UPDATE biblioteca.livros SET quantidade_locado = quantidade_locado + 1 WHERE id_livro = %s"
-#                 cursor.execute(sql2, (book_id))
-#                 conn.commit()
-#                 cursor.close()
-#                 conn.close()
-#                 print(f"Locação efetuada com sucesso. O aluno tem sete dias para devolver o livro à biblioteca | ID da locação: {renting_id}")
-#                 break
-#         except ValueError:
-#             print("Valor inválido")
-#         except Exception as renting_error:
-#             print(f"Erro ao realizar a locação: {renting_error}")
-
-from datetime import date, timedelta
-from os import system
-
 def book_rent(user):
     system('cls')
-    list_students()  # Assuming this function lists students
+    list_students()
     student_id = int(input("Digite o ID do aluno que fará o empréstimo do livro: "))
-    list_books_simpler()  # Assuming this function lists books
+    list_books_simpler()
     book_id = int(input("Digite o ID do livro a ser locado: "))
-    
     try:
         conn = start_connection()
         cursor = conn.cursor()
-
-        # Step 1: Check if there is an existing reservation for the book by the student
         sql = "SELECT id_reserva, id_livro FROM biblioteca.reservas WHERE id_aluno = %s AND id_livro = %s"
         cursor.execute(sql, (student_id, book_id))
         result = cursor.fetchone()
-
         if result is not None:
-            # Remove the reservation if found
             sql_remove_reservation = "DELETE FROM biblioteca.reservas WHERE id_aluno = %s AND id_livro = %s"
             cursor.execute(sql_remove_reservation, (student_id, book_id))
             conn.commit()
-
-        # Step 2: Check if the student already has this book rented
         sql_check_rentings = "SELECT id_livro FROM biblioteca.locacoes WHERE id_aluno = %s"
         cursor.execute(sql_check_rentings, (student_id,))
-        result_check = cursor.fetchall()  # Fetch all rentals for the student
-        list_rentings = [row[0] for row in result_check]  # Extracting book IDs from rentals
-
-        # Step 3: Check book availability
+        result_check = cursor.fetchall()
+        list_rentings = [locacoes[0] for locacoes in result_check]
         sql_check_availability = "SELECT quantidade_catalogo, quantidade_reservado, quantidade_locado FROM biblioteca.livros WHERE id_livro = %s"
         cursor.execute(sql_check_availability, (book_id,))
         result_check2 = cursor.fetchone()
-
         if book_id in list_rentings:
             print("Você já está com esse livro locado.")
         elif result_check2[1] + result_check2[2] >= result_check2[0]:
@@ -555,32 +492,50 @@ def book_rent(user):
             date_renting = date.today()
             deadline_renting = date_renting + timedelta(days=7)
             date_return = None
-            
-            # Step 4: Insert rental record into locacoes table
-            sql_rent = """
-                INSERT INTO biblioteca.locacoes(id_livro, id_aluno, id_funcionario, data_emprestimo, prazo_emprestimo_devolucao, data_devolucao, status_devolucao, valor_multa) 
-                VALUES (%s, %s, %s, %s, %s, %s, FALSE, 0) RETURNING id_locacao;
-            """
+            sql_rent = "INSERT INTO biblioteca.locacoes(id_livro, id_aluno, id_funcionario, data_emprestimo, prazo_emprestimo_devolucao, data_devolucao, status_devolucao, valor_multa) VALUES (%s, %s, %s, %s, %s, %s, FALSE, 0) RETURNING id_locacao"
             cursor.execute(sql_rent, (book_id, student_id, user[0], date_renting, deadline_renting, date_return))
             renting_id = cursor.fetchone()[0]
-
-            # Step 5: Update the quantity of rented books
             sql_update_quantity = "UPDATE biblioteca.livros SET quantidade_locado = quantidade_locado + 1 WHERE id_livro = %s"
             cursor.execute(sql_update_quantity, (book_id,))
-            
             conn.commit()
             print(f"Locação efetuada com sucesso. O aluno tem sete dias para devolver o livro à biblioteca | ID da locação: {renting_id}")
-
     except ValueError:
         print("Valor inválido.")
     except Exception as renting_error:
         print(f"Erro ao realizar a locação: {renting_error}")
     finally:
-        if 'cursor' in locals():
-            cursor.close()
-        if 'conn' in locals():
             conn.close()
 
+def book_return(user):
+    system('cls')
+    list_books = list_rented_books()
+    if list_books is None:
+        print("Não existem livros locados a serem devolvidos")
+        crud_admin_rentings(user)
+    else:
+        return_id = int(input("Digite o ID da locação a ser devolvida: "))
+    fine_checher = check_if_exist_book_fine(return_id)
+    today = date.today()
+    book_return = True
+    try:
+        conn = start_connection()
+        cursor = conn.cursor()
+        sql = "UPDATE biblioteca.locacoes SET data_devolucao = %s WHERE locacoes.id_locacao = %s"
+        cursor.execute(sql, (today, return_id))
+        conn.commit()
+        sql2 = "UPDATE biblioteca.locacoes SET status_devolucao = %s WHERE locacoes.id_locacao = %s"
+        cursor.execute(sql2, (book_return, return_id))
+        conn.commit()
+        conn.close()
+        if fine_checher == 5:
+            print(f"Livro devolvido fora do prazo. Aluno deve pagar uma multa de R$ {float(fine_checher)}")
+        else:
+            print(f"Livro devolvido dentro do prazo")
+    except ValueError:
+        print("Valor inválido.")
+    except Exception as return_error:
+        print(f"Erro ao realizar a devolução: {return_error}")
+            
 def add_publisher():
     publisher_name = input("Digite o nome da editora: ")
     if publisher_name == '':

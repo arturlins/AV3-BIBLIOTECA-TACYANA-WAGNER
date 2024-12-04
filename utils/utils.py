@@ -1,4 +1,5 @@
 from config.db import start_connection
+from datetime import date
 
 def get_book_id():
     conn = start_connection()
@@ -288,6 +289,55 @@ def list_students():
         print(color.BOLD + f"- ID: {id_aluno}" + color.END)
         print(f"\n-----------------------------------------------------------------------------------------------------------\n")
     conn.close()
+
+def list_rented_books():
+    conn = start_connection()
+    cursor = conn.cursor()
+    sql = "SELECT locacoes.id_locacao, livros.id_livro, livros.titulo_livro, alunos.id_aluno, alunos.nome_aluno FROM biblioteca.locacoes JOIN biblioteca.livros ON locacoes.id_livro = livros.id_livro JOIN biblioteca.alunos ON locacoes.id_aluno = alunos.id_aluno WHERE locacoes.status_devolucao = FALSE"
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    print("Lista de livros locados (em ordem de ID de locação): ")
+    for id_locacao, id_livro, titulo_livro, id_aluno, nome_aluno in result:
+        print(color.BOLD + f"- ID LOCAÇÃO: {id_locacao}" + color.END)
+        print(f"- ID LIVRO: {id_livro}")
+        print(f"- TÍTULO DO LIVRO: {titulo_livro}")
+        print(f"- ID: {id_aluno}")
+        print(f"- NOME: {nome_aluno}")
+        print(f"\n-----------------------------------------------------------------------------------------------------------\n")
+    conn.close()
+
+def apply_fines():
+    try:
+        conn = start_connection()
+        cursor = conn.cursor()
+        today = date.today()
+        sql = "SELECT id_locacao, multa_aplicada, valor_multa FROM biblioteca.locacoes WHERE data_devolucao IS NULL AND multa_aplicada = False AND prazo_emprestimo_devolucao < %s"
+        cursor.execute(sql, (today,))
+        result = cursor.fetchall()
+        #print(result)
+        for id_locacao, multa_aplicada, valor_multa in result:
+            fine = valor_multa + 5
+            multa_aplicada = True
+            update_sql = "UPDATE biblioteca.locacoes SET valor_multa = %s WHERE locacoes.id_locacao = %s"
+            cursor.execute(update_sql, (fine, id_locacao))
+            conn.commit()
+            update_sql2 = "UPDATE biblioteca.locacoes SET multa_aplicada = %s WHERE locacoes.id_locacao = %s"
+            cursor.execute(update_sql2, (multa_aplicada, id_locacao))
+            conn.commit()
+        conn.close()
+    except Exception as error:
+        print(f"Erro ao aplicar a multa: {error}")
+
+def check_if_exist_book_fine(return_id):
+    conn = start_connection()
+    cursor = conn.cursor()
+    sql = "SELECT id_locacao, multa_aplicada, valor_multa FROM biblioteca.locacoes WHERE multa_aplicada = TRUE AND id_locacao = %s"
+    cursor.execute(sql, (return_id,))
+    result = cursor.fetchall()
+    if result:
+        return 5
+    else:
+        return 0
 
 class color:
 #    PURPLE = '\033[95m'
