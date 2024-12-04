@@ -1,5 +1,5 @@
 from os import system
-from services.admin_services import add_admin, list_books, add_new_book, remove_book, edit_books_titles, edit_books_quantities, add_book_author, remove_author, edit_books_authors, edit_worker_name, edit_worker_email, edit_worker_password, add_publisher, edit_publishers, remove_publisher, add_new_category, remove_category, edit_category
+from services.admin_services import add_admin, list_books, add_new_book, remove_book, edit_books_titles, edit_books_quantities, add_book_author, remove_author, edit_books_authors, edit_worker_name, edit_worker_email, edit_worker_password, add_publisher, edit_publishers, remove_publisher, add_new_category, remove_category, edit_category, book_rent
 from utils.utils import list_books, list_all_book_authors, list_book_publisher, list_book_category
 from services.searching_services import book_search
 import pwinput
@@ -29,7 +29,7 @@ def admin_screen(user):
                 case 2:
                     crud_admin_books(user)
                 case 3:
-                    crud_admin_locations(user)
+                    crud_admin_rentings(user)
                 case 4:
                     crud_admin_personal_data(user)
                 case 5:
@@ -167,5 +167,31 @@ def crud_admin_personal_data(user):
             system('cls')
             print("Opção inválida")
 
-def crud_admin_locations(user):
-    print("")
+def crud_admin_rentings(user):
+    while True:
+        try: 
+            print("RESERVAS E LOCAÇÕES DE LIVROS\n")
+            # print("1 - Atualizar o nome")
+            # print("2 - Atualizar o e-mail")
+            print("3 - Efetuar a locação de um livro para um aluno")
+            #print("4 - Voltar ao menu anterior")
+            opc = int(input("Selecione a opção: "))
+            match opc:
+                # case 1:
+                #     system('cls')
+                #     edit_worker_name(user)
+                # case 2:
+                #     system('cls')
+                #     edit_worker_email(user)
+                case 3:
+                    system('cls')
+                    book_rent(user)
+                # case 4:
+                #     system('cls')
+                #     admin_screen(user)
+                # case _:
+                #     system('cls')
+                #     print("Opção inválida")          
+        except ValueError:
+            system('cls')
+            print("Opção inválida")

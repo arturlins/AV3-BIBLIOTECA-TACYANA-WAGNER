@@ -169,6 +169,19 @@ def get_category_name_by_id(id_edit):
     else:
         return 0
 
+def get_reservation_id_by_ids(student_id, book_id):
+    conn = start_connection()
+    cursor = conn.cursor()
+    sql = "SELECT id_reserva FROM biblioteca.reservas WHERE id_aluno = %s AND id_livro = %s"
+    cursor.execute(sql, [student_id, book_id])
+    reservation = cursor.fetchone()[0]
+    cursor.close()
+    conn.close()
+    if reservation:
+        return reservation
+    else:
+        return 0
+
 def list_all_book_authors():
     conn = start_connection()
     cursor = conn.cursor()
@@ -259,6 +272,21 @@ def list_book_category():
     print("Lista de categorias cadastradas (em ordem alfabética): ")
     for id_categoria, nome_categoria in result:
         print(f"- {nome_categoria} - ID: {id_categoria}")
+    conn.close()
+
+def list_students():
+    conn = start_connection()
+    cursor = conn.cursor()
+    sql = "SELECT nome_aluno, matricula_aluno, curso_aluno, id_aluno FROM biblioteca.alunos ORDER BY nome_aluno"
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    print("Lista de alunos cadastrados (em ordem alfabética): ")
+    for nome_aluno, matricula_aluno, curso_aluno, id_aluno in result:
+        print(f"- NOME: {nome_aluno}")
+        print(f"- MATRÍCULA: {matricula_aluno}")
+        print(f"- CURSO: {curso_aluno}")
+        print(color.BOLD + f"- ID: {id_aluno}" + color.END)
+        print(f"\n-----------------------------------------------------------------------------------------------------------\n")
     conn.close()
 
 class color:
