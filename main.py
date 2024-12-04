@@ -22,6 +22,7 @@ while True:
                 login_student(email, password)
                 authenticated_user = login_student(email, password)
                 if authenticated_user:
+                    system('cls')
                     user_screen(authenticated_user)
                 else:
                     system('cls')

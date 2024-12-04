@@ -13,7 +13,7 @@ def admin_screen(user):
             print("2 - Menu de opções: LIVROS")
             print("3 - Menu de opções: RESERVAS E LOCAÇÕES")
             print("4 - Editar dados pessoais")
-            print("5 - Sair")
+            print("5 - Sair do sistema")
             opc = int(input("Selecione a opção: "))
             match opc:
                 case 1:
@@ -27,11 +27,11 @@ def admin_screen(user):
                     password = pwinput.pwinput("Digite a senha do administrador: ")
                     add_admin(registration, name, email, password)
                 case 2:
-                    crud_admin_screen(user)
-                # case 3:
-                #     add_new_book(user)
+                    crud_admin_books(user)
+                case 3:
+                    crud_admin_locations(user)
                 case 4:
-                    crud_admin_edit(user)
+                    crud_admin_personal_data(user)
                 case 5:
                     system('cls')
                     print("Saindo...")
@@ -43,7 +43,7 @@ def admin_screen(user):
             system('cls')
             print("Opção inválida")
 
-def crud_admin_screen(user):
+def crud_admin_books(user):
     system('cls')
     while True:
         try: 
@@ -137,7 +137,7 @@ def crud_admin_screen(user):
             system('cls')
             print("Opção inválida")
 
-def crud_admin_edit(user):
+def crud_admin_personal_data(user):
     system('cls')
     while True:
         try: 
@@ -167,3 +167,5 @@ def crud_admin_edit(user):
             system('cls')
             print("Opção inválida")
 
+def crud_admin_locations(user):
+    print("")

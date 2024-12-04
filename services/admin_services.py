@@ -630,36 +630,3 @@ def edit_category():
             print("ID inexistente")
         except Exception as edit_category_error:
             print(f"Erro ao tentar editar a categoria: {edit_category_error}")
-
-# def create_task(user_id, title):
-#     conn = criar_conexao()
-#     cursor = conn.cursor()
-#     sql = 'INSERT INTO TASKS (title, user_id) VALUES (%s, %s)'
-#     cursor.execute(sql, [title, user_id])
-#     conn.commit()
-
-
-# def list_tasks(user_id):
-#     conn = criar_conexao()
-#     cursor = conn.cursor()
-#     sql = 'SELECT * FROM TASKS WHERE user_id = %s'
-#     cursor.execute(sql, [user_id])
-#     tasks = cursor.fetchall()
-#     return tasks
-
-# def delete_task(user_id, task_id):
-#     conn = criar_conexao()
-#     cursor = conn.cursor()
-#     sql = 'DELETE FROM TASKS WHERE user_id = %s AND id = %s'
-#     cursor.execute(sql, [user_id, task_id])
-#     conn.commit()
-#     # return cursor.rowcount
-
-
-# def update_task(user_id, task_id, title):
-#     conn = criar_conexao()
-#     cursor = conn.cursor()
-#     sql = 'UPDATE TASKS SET title = %s WHERE user_id = %s AND id = %s'
-#     cursor.execute(sql, [title, user_id, task_id])
-#     conn.commit()
-#     # return cursor.rowcount
