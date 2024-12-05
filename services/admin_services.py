@@ -92,9 +92,16 @@ def add_new_book(user):
                             if id_author <= 0 or id_author > counter:
                                 print("Valor inválido")
                             elif id_author == counter:
-                                add_book_author()   
-                                authors.append(id_author)
+                                author_name = input("Digite o nome do novo autor: ")
+                                conn = start_connection()
+                                cursor = conn.cursor()
+                                sql = "INSERT INTO biblioteca.autores(nome_autor) VALUES (%s)"
+                                cursor.execute(sql, [author_name])
+                                conn.commit()
+                                conn.close()
+                                print(f"Autor '{author_name}' adicionado com sucesso!")
                                 counter += 1
+                                authors.append(id_author)
                             elif id_author in range(1, (counter + 1)):
                                 authors.append(id_author)
                         except ValueError:
@@ -112,6 +119,7 @@ def add_new_book(user):
         break
     
     system('cls')
+    #print(authors)
     while next == 1:
         try:
             book_title = input(f"Digite o título do livro: ")
@@ -223,16 +231,18 @@ def add_new_book(user):
                 #cursor.execute(sql, [book_title, id_publisher, book_isbn, book_year, book_language, id_category, book_quantity])
                 conn.commit()
                 conn.close()
-                index = 0
-                author_index = authors[index]
                 for i in range(max_author):
+                    #index = 0
+                    #author_index = authors[index]
+                    author_index = authors[i-1]
                     conn = start_connection()
                     cursor = conn.cursor()
                     sql = "INSERT INTO biblioteca.autores_do_livro(id_livro, id_autor) VALUES (%s, %s)"
+                    #cursor.execute(sql, [current_book_id, authors[index]])
                     cursor.execute(sql, [current_book_id, author_index])
                     conn.commit()
                     conn.close()
-                    index += 1
+                    #index += 1
                 system('cls')
                 print("Livro adicionado com sucesso")
                 break

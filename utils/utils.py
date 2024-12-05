@@ -12,7 +12,7 @@ def get_book_id():
     if next_id:
         return next_id
     else:
-        return 0
+        return 1
 
 def get_author_id():
     conn = start_connection()
@@ -25,7 +25,7 @@ def get_author_id():
     if next_id:
         return next_id
     else:
-        return 0
+        return 1
 
 def get_category_id():
     conn = start_connection()
@@ -38,7 +38,7 @@ def get_category_id():
     if next_id:
         return next_id
     else:
-        return 0
+        return 1
     
 def get_publisher_id():
     conn = start_connection()
@@ -51,7 +51,7 @@ def get_publisher_id():
     if next_id:
         return next_id
     else:
-        return 0
+        return 1
 
 def get_title_by_id(id_edit):
     conn = start_connection()
@@ -64,7 +64,7 @@ def get_title_by_id(id_edit):
     if title:
         return title
     else:
-        return 0
+        return 1
 
 def get_quantity_by_id(id_edit):
     conn = start_connection()
@@ -77,7 +77,7 @@ def get_quantity_by_id(id_edit):
     if quantity:
         return quantity
     else:
-        return 0
+        return 1
     
 def get_author_by_id(id_edit):
     conn = start_connection()
@@ -90,7 +90,7 @@ def get_author_by_id(id_edit):
     if author:
         return author
     else:
-        return 0
+        return 1
     
 def get_student_name_by_id(id_edit):
     conn = start_connection()
@@ -103,7 +103,7 @@ def get_student_name_by_id(id_edit):
     if student:
         return student
     else:
-        return 0
+        return 1
     
 def get_student_email_by_id(id_edit):
     conn = start_connection()
@@ -116,7 +116,7 @@ def get_student_email_by_id(id_edit):
     if student:
         return student
     else:
-        return 0
+        return 1
 
 def get_worker_name_by_id(id_edit):
     conn = start_connection()
@@ -129,7 +129,7 @@ def get_worker_name_by_id(id_edit):
     if worker:
         return worker
     else:
-        return 0
+        return 1
     
 def get_worker_email_by_id(id_edit):
     conn = start_connection()
@@ -142,7 +142,7 @@ def get_worker_email_by_id(id_edit):
     if worker:
         return worker
     else:
-        return 0
+        return 1
     
 def get_publisher_name_by_id(id_edit):
     conn = start_connection()
@@ -155,7 +155,7 @@ def get_publisher_name_by_id(id_edit):
     if publisher:
         return publisher
     else:
-        return 0
+        return 1
     
 def get_category_name_by_id(id_edit):
     conn = start_connection()
@@ -168,7 +168,7 @@ def get_category_name_by_id(id_edit):
     if category:
         return category
     else:
-        return 0
+        return 1
 
 def get_reservation_id_by_ids(student_id, book_id):
     conn = start_connection()
@@ -181,7 +181,7 @@ def get_reservation_id_by_ids(student_id, book_id):
     if reservation:
         return reservation
     else:
-        return 0
+        return 1
 
 def list_all_book_authors():
     conn = start_connection()
